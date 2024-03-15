@@ -60,6 +60,11 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
   }
 
   @override
+  void dispose() {
+    _animationController!.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Consumer<HeadingController>(builder: (context, value, child) {
       return Scaffold(
@@ -93,6 +98,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(10)),
                       child: TextFormField(
+                        controller: _firstNameController,
+                        focusNode: _firstNode,
                         decoration: const InputDecoration(
                             hintText: "Student First Name",
                             helperStyle: TextStyle(fontWeight: FontWeight.w300),
@@ -116,6 +123,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(10)),
                       child: TextFormField(
+                        controller: _lastNameController,
+                        focusNode: _LastNode,
                         decoration: const InputDecoration(
                             hintText: "Student last Name",
                             helperStyle: TextStyle(fontWeight: FontWeight.w300),
@@ -162,6 +171,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(10)),
                       child: TextFormField(
+                        controller: _studentIdController,
+                        focusNode: _studentIdNode,
                         decoration: const InputDecoration(
                             hintText: "Student ID",
                             helperStyle: TextStyle(fontWeight: FontWeight.w100),
@@ -326,8 +337,6 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                 SnackBar(content: Text(e.toString())));
                           }
                           setState(() {
-                            //   isUploaded = true;
-                            // isLoading = true;
                             _animationController!.forward();
                           });
                         },
@@ -404,7 +413,11 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                                                 setState(() {
                                                                   isUploaded =
                                                                       false;
-                                                                  //  file = null;
+                                                                  isLoading =
+                                                                      false;
+                                                                  _animationController!
+                                                                      .reset();
+                                                                  file = null;
                                                                 });
                                                               },
                                                               icon: const Icon(
@@ -439,45 +452,6 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                         )
                                 ],
                               ),
-                              // child: isUploaded
-                              //     ? Column(
-                              //         mainAxisAlignment:
-                              //             MainAxisAlignment.center,
-                              //         crossAxisAlignment:
-                              //             CrossAxisAlignment.center,
-                              //         children: [
-                              //           Icon(
-                              //             Icons.done_rounded,
-                              //             size: 30,
-                              //             color: Colors.yellow,
-                              //           ),
-                              //           SizedBox(
-                              //             height: 10,
-                              //           ),
-                              //           Text(
-                              //             "Photo name.....",
-                              //             style: TextStyle(
-                              //                 fontWeight: FontWeight.w300),
-                              //           )
-                              //         ],
-                              //       )
-                              //     : const Column(
-                              //         mainAxisAlignment:
-                              //             MainAxisAlignment.center,
-                              //         crossAxisAlignment:
-                              //             CrossAxisAlignment.center,
-                              //         children: [
-                              //           Icon(
-                              //             color: Colors.black,
-                              //             Icons.upload_file_sharp,
-                              //             size: 30,
-                              //           ),
-                              //           SizedBox(
-                              //             height: 10,
-                              //           ),
-                              //           Text("Upload your student image")
-                              //         ],
-                              //       ),
                             ),
                           ),
                         ),
