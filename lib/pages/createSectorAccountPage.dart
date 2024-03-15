@@ -36,15 +36,29 @@ TextEditingController _lastNameController = TextEditingController();
 FocusNode _LastNode = FocusNode();
 bool isLoading = false;
 double? _animationValue;
-
-@override
-void initState() {
-  _animationController =
-      AnimationController(vsync: this, duration: Duration(seconds: 1));
-}
+XFile? file;
+String? image;
 
 class _SectorAccountCreateState extends State<SectorAccountCreate>
     with SingleTickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _animationController!.addListener(() {
+      setState(() {
+        _animationValue = _animationController!.value;
+        if (_animationValue! >= 0.2 && _animationValue! < 0.5) {
+          isLoading = true;
+        } else if (_animationValue! > 0.5) {
+          isLoading = false;
+          isUploaded = true;
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HeadingController>(builder: (context, value, child) {
@@ -302,10 +316,19 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                   Padding(
                       padding: const EdgeInsets.only(left: 15, right: 15),
                       child: GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          try {
+                            ImagePicker imagePicker = ImagePicker();
+                            file = await imagePicker.pickImage(
+                                source: ImageSource.gallery);
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString())));
+                          }
                           setState(() {
                             //   isUploaded = true;
-                            isLoading = true;
+                            // isLoading = true;
+                            _animationController!.forward();
                           });
                         },
                         child: Material(
@@ -336,7 +359,7 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                               const EdgeInsets.only(top: 15),
                                           child: AnimatedContainer(
                                             duration:
-                                                const Duration(seconds: 1),
+                                                const Duration(seconds: 3),
                                             child: const Center(
                                               child: CircularProgressIndicator(
                                                 color: Colors.yellow,
@@ -347,25 +370,51 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                       : AnimatedContainer(
                                           duration: const Duration(seconds: 1),
                                           child: isUploaded
-                                              ? const Column(
+                                              ? Column(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    Icon(
+                                                    const Icon(
                                                       Icons.done_rounded,
                                                       size: 30,
                                                       color: Colors.yellow,
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 10,
                                                     ),
-                                                    Text(
-                                                      "Photo name.....",
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w300),
+                                                    Container(
+                                                      height: 40,
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 100,
+                                                            child: Text(
+                                                                file!.name),
+                                                          ),
+                                                          IconButton(
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  isUploaded =
+                                                                      false;
+                                                                  //  file = null;
+                                                                });
+                                                              },
+                                                              icon: const Icon(
+                                                                Icons.delete,
+                                                                color:
+                                                                    Colors.red,
+                                                                size: 20,
+                                                              ))
+                                                        ],
+                                                      ),
                                                     )
                                                   ],
                                                 )
@@ -375,15 +424,15 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    Icon(
+                                                    const Icon(
                                                       color: Colors.black,
                                                       Icons.upload_file_sharp,
                                                       size: 30,
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 10,
                                                     ),
-                                                    Text(
+                                                    const Text(
                                                         "Upload your student image")
                                                   ],
                                                 ),
@@ -445,11 +494,6 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                           height: 45,
                           child: ElevatedButton(
                               onPressed: () async {
-                                XFile? file;
-                                String? image;
-                                ImagePicker imagePicker = ImagePicker();
-                                file = await imagePicker.pickImage(
-                                    source: ImageSource.gallery);
                                 // Member member = Member(
                                 //     firstName: "",
                                 //     lastName: "",
@@ -462,7 +506,7 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
 
                                 // await CreateMemberAccount()
                                 //     .createMemeberAccount(member);
-                                print(file!.name.toString());
+                                //  print(file!.name.toString());
                               },
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
