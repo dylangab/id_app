@@ -35,15 +35,13 @@ class HelperFunctions {
             .set({}));
   }
 
-  Future<String> uploadImage(XFile? file) async {
+  Future<String> uploadImage(XFile? file, String storageFolder) async {
     String? image;
-    ImagePicker imagePicker = ImagePicker();
-    file = await imagePicker.pickImage(source: ImageSource.gallery);
-    //  print('${coverFile?.path}');
+
     String filename = DateTime.now().microsecondsSinceEpoch.toString();
 
     Reference reference = FirebaseStorage.instance.ref();
-    Reference referenceimage = reference.child('images');
+    Reference referenceimage = reference.child(storageFolder);
     Reference referenceupload = referenceimage.child(filename);
     try {
       await referenceupload.putFile(File(file!.path));

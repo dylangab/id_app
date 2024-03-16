@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:id_app/Utils/Widgets/dropdownButton.dart';
+import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/models/member.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,9 @@ class SectorAccountCreate extends StatefulWidget {
 }
 
 String gender = "male";
-String? selectedValue;
+String? RoleValue;
+String? sectorValue;
+String? departmentValue;
 bool isUploaded = false;
 AnimationController? _animationController;
 FocusNode _maleRadioButton = FocusNode();
@@ -37,21 +41,53 @@ TextEditingController _firstNameController = TextEditingController();
 FocusNode _firstNode = FocusNode();
 TextEditingController _lastNameController = TextEditingController();
 FocusNode _LastNode = FocusNode();
-TextEditingController _dropDownSearch = TextEditingController();
-FocusNode _dropDownButton = FocusNode();
+TextEditingController _roleController = TextEditingController();
+FocusNode _roleNode = FocusNode();
+TextEditingController _sectorController = TextEditingController();
+FocusNode _sectorNode = FocusNode();
 bool isLoading = false;
 double? _animationValue;
 XFile? file;
 String? image;
-final List<String> items = [
-  'Item1',
-  'Item2',
-  'Item3',
-  'Item4',
-  'Item5',
-  'Item6',
-  'Item7',
-  'Item8',
+final List<String> Roleitems = [
+  'Club Presidents',
+  'Vice Presidents',
+  'Treasurers',
+  'Secretaries',
+  'Event Coordinators',
+  'Marketing/Publicity Officers',
+  'Membership Coordinators',
+];
+final List<String> sectors = [
+  'Student Government/Student Council',
+  'Clubs and Organizations',
+  'Recreational Facilities',
+  'Student Services',
+  'Events and Programming',
+  'Food Services and Dining',
+  'Student Publications and Media',
+  'Volunteer and Community Engagement',
+  'Student Advocacy and Support',
+  'Financial Resources',
+  'Technology and IT Services',
+  'Student Union Facilities and Spaces'
+];
+final List<String> departments = [
+  'History',
+  'Philosophy',
+  'Linguistics',
+  'Theatre Arts/Drama',
+  'Psychology',
+  'Anthropology',
+  'Political Science',
+  'Economics',
+  'Geology',
+  'Computer Science',
+  'Electrical Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Chemical Engineering',
+  'Information Technology'
 ];
 
 class _SectorAccountCreateState extends State<SectorAccountCreate>
@@ -84,6 +120,16 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
     _LastNode.dispose();
     _studentIdController.dispose();
     _studentIdNode.dispose();
+    _department.dispose();
+    _departmentController.dispose();
+    _sectorController.dispose();
+    _sectorNode.dispose();
+    _roleController.dispose();
+    _roleNode.dispose();
+    _passwordController.dispose();
+    _passwordNode.dispose();
+    _confirmPasswordController.dispose();
+    _confirmPasswordNode.dispose();
   }
 
   @override
@@ -169,17 +215,12 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                       shape: OutlineInputBorder(
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(10)),
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                            hintText: "Department",
-                            helperStyle: TextStyle(fontWeight: FontWeight.w100),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
+                      child: CustomDropDownButton(
+                          dropdownItems: departments,
+                          hintText: "Department",
+                          selectedValue: departmentValue,
+                          searchController: _departmentController,
+                          searchNode: _department),
                     ),
                   ),
                   const SizedBox(
@@ -218,11 +259,11 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                             borderSide: BorderSide.none,
                             borderRadius: BorderRadius.circular(10)),
                         child: CustomDropDownButton(
-                            dropdownItems: items,
+                            dropdownItems: Roleitems,
                             hintText: "Select your role",
-                            selectedValue: selectedValue,
-                            searchController: _dropDownSearch,
-                            searchNode: _dropDownButton)),
+                            selectedValue: RoleValue,
+                            searchController: _roleController,
+                            searchNode: _roleNode)),
                   ),
                   const SizedBox(
                     height: 15 + 15,
@@ -324,17 +365,12 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                       shape: OutlineInputBorder(
                           borderSide: BorderSide.none,
                           borderRadius: BorderRadius.circular(10)),
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                            hintText: "Sector",
-                            helperStyle: TextStyle(fontWeight: FontWeight.w100),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
+                      child: CustomDropDownButton(
+                          dropdownItems: sectors,
+                          hintText: "Sector",
+                          selectedValue: sectorValue,
+                          searchController: _sectorController,
+                          searchNode: _sectorNode),
                     ),
                   ),
                   const SizedBox(
@@ -409,7 +445,7 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                                     const SizedBox(
                                                       height: 10,
                                                     ),
-                                                    Container(
+                                                    SizedBox(
                                                       height: 40,
                                                       child: Row(
                                                         crossAxisAlignment:
@@ -453,15 +489,15 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    const Icon(
+                                                    Icon(
                                                       color: Colors.black,
                                                       Icons.upload_file_sharp,
                                                       size: 30,
                                                     ),
-                                                    const SizedBox(
+                                                    SizedBox(
                                                       height: 10,
                                                     ),
-                                                    const Text(
+                                                    Text(
                                                         "Upload your student image")
                                                   ],
                                                 ),
@@ -484,19 +520,20 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                           height: 45,
                           child: ElevatedButton(
                               onPressed: () async {
-                                // Member member = Member(
-                                //     firstName: "",
-                                //     lastName: "",
-                                //     department: "",
-                                //     gender: gender,
-                                //     role: "",
-                                //     sector: "",
-                                //     studentId: "",
-                                //     studentPhoto: "");
+                                String imageUrl = await HelperFunctions()
+                                    .uploadImage(file, "student_picture");
+                                Member member = Member(
+                                    firstName: _firstNameController.value.text,
+                                    lastName: _lastNameController.value.text,
+                                    department: "",
+                                    gender: gender,
+                                    role: "",
+                                    sector: "",
+                                    studentId: "",
+                                    studentPhoto: imageUrl);
 
                                 // await CreateMemberAccount()
                                 //     .createMemeberAccount(member);
-                                //  print(file!.name.toString());
                               },
                               style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(

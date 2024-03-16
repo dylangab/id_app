@@ -25,11 +25,11 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
-        hint: const Padding(
-          padding: EdgeInsets.only(left: 10),
+        hint: Padding(
+          padding: const EdgeInsets.only(left: 10),
           child: Text(
-            "Select your role",
-            style: TextStyle(fontSize: 16),
+            widget.hintText,
+            style: const TextStyle(fontSize: 16),
           ),
         ),
         items: widget.dropdownItems
@@ -56,7 +56,7 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
         },
         buttonStyleData: ButtonStyleData(
             width: MediaQuery.of(context).size.width,
-            height: 70,
+            height: 65,
             elevation: 5,
             decoration: BoxDecoration(
                 color: Colors.white,
