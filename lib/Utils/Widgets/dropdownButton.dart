@@ -25,6 +25,7 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
+        focusNode: widget.searchNode,
         hint: Padding(
           padding: const EdgeInsets.only(left: 10),
           child: Text(

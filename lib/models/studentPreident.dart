@@ -4,10 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class StudentPreident extends Member {
   String? signature;
+  String? email;
+  String? password;
+
   StudentPreident(
-      {required this.signature,
-      String? email,
-      String? password,
+      {this.signature,
+      this.email,
+      required this.password,
       required String? firstName,
       required String? lastName,
       required String? department,
@@ -17,8 +20,6 @@ class StudentPreident extends Member {
       required String? sector,
       required String? studentPhoto})
       : super(
-            password: password,
-            email: email,
             lastName: lastName,
             firstName: firstName,
             department: department,

@@ -10,12 +10,9 @@ class Member {
   String? gender;
   String? sector;
   String? studentPhoto;
-  String? email;
-  String? password;
+
   Member(
-      {this.password,
-      this.email,
-      required this.lastName,
+      {required this.lastName,
       required this.firstName,
       required this.department,
       required this.gender,
@@ -38,8 +35,6 @@ class CreateMemberAccount {
       "gender": member.gender,
       "sector": member.sector,
       "studentPhoto": member.studentPhoto,
-      "email": member.email,
-      "password": member.password
     });
   }
 }

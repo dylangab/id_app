@@ -46,7 +46,9 @@ class HelperFunctions {
     try {
       await referenceupload.putFile(File(file!.path));
       image = await referenceupload.getDownloadURL();
-    } catch (e) {}
+    } catch (e) {
+      print(e.toString());
+    }
     return image!;
   }
 
@@ -63,7 +65,6 @@ class HelperFunctions {
       "gender": member.gender,
       "sector": member.gender,
       "studentPhoto": member.studentPhoto,
-      "email": member.email
     });
   }
 
