@@ -33,6 +33,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   document_file_save_plus: ^2.0.0
   dotted_border: ^2.1.0
+  dropdown_button2: ^2.3.9
   firebase_auth: ^4.17.9
   firebase_core: ^2.27.1
   firebase_storage: ^11.6.10

@@ -1,7 +1,6 @@
 //import 'package:advance_pdf_viewer_fork/advance_pdf_viewer_fork.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 
 class StudentInfoPage extends StatefulWidget {

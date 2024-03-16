@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:iconsax/iconsax.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:id_app/Utils/Widgets/dropdownButton.dart';
 import 'package:id_app/models/member.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class SectorAccountCreate extends StatefulWidget {
   const SectorAccountCreate({super.key});
@@ -16,6 +18,7 @@ class SectorAccountCreate extends StatefulWidget {
 }
 
 String gender = "male";
+String? selectedValue;
 bool isUploaded = false;
 AnimationController? _animationController;
 FocusNode _maleRadioButton = FocusNode();
@@ -34,10 +37,22 @@ TextEditingController _firstNameController = TextEditingController();
 FocusNode _firstNode = FocusNode();
 TextEditingController _lastNameController = TextEditingController();
 FocusNode _LastNode = FocusNode();
+TextEditingController _dropDownSearch = TextEditingController();
+FocusNode _dropDownButton = FocusNode();
 bool isLoading = false;
 double? _animationValue;
 XFile? file;
 String? image;
+final List<String> items = [
+  'Item1',
+  'Item2',
+  'Item3',
+  'Item4',
+  'Item5',
+  'Item6',
+  'Item7',
+  'Item8',
+];
 
 class _SectorAccountCreateState extends State<SectorAccountCreate>
     with SingleTickerProviderStateMixin {
@@ -61,7 +76,14 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
 
   @override
   void dispose() {
+    super.dispose();
     _animationController!.dispose();
+    _firstNameController.dispose();
+    _firstNode.dispose();
+    _lastNameController.dispose();
+    _LastNode.dispose();
+    _studentIdController.dispose();
+    _studentIdNode.dispose();
   }
 
   @override
@@ -191,22 +213,16 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                   Padding(
                     padding: const EdgeInsets.only(left: 15, right: 15),
                     child: Material(
-                      elevation: 5,
-                      shape: OutlineInputBorder(
-                          borderSide: BorderSide.none,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: TextFormField(
-                        decoration: const InputDecoration(
-                            hintText: "Role",
-                            helperStyle: TextStyle(fontWeight: FontWeight.w100),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                    ),
+                        elevation: 5,
+                        shape: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: CustomDropDownButton(
+                            dropdownItems: items,
+                            hintText: "Select your role",
+                            selectedValue: selectedValue,
+                            searchController: _dropDownSearch,
+                            searchNode: _dropDownButton)),
                   ),
                   const SizedBox(
                     height: 15 + 15,
