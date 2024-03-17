@@ -147,4 +147,17 @@ class HelperFunctions {
     result = lenght / screenSize;
     return result;
   }
+
+  Future<List> fetchCatagoires(
+      String collection, String docName, String fieldName) async {
+    List list = [];
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection(collection)
+        .doc(docName)
+        .get();
+    if (doc.exists) {
+      list = (doc[fieldName] as List<dynamic>).cast<String>();
+    }
+    return list;
+  }
 }
