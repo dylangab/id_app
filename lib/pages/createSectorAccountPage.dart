@@ -1,6 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +15,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class SectorAccountCreate extends StatefulWidget {
   const SectorAccountCreate({super.key});
@@ -26,6 +31,7 @@ String? sectorValue;
 String? departmentValue;
 bool isUploaded = false;
 AnimationController? _animationController;
+AnimationController? _buttonAnimationController;
 FocusNode _maleRadioButton = FocusNode();
 FocusNode _femaleRadioButton = FocusNode();
 TextEditingController _emailController = TextEditingController();
@@ -48,8 +54,13 @@ TextEditingController _sectorController = TextEditingController();
 FocusNode _sectorNode = FocusNode();
 bool isLoading = false;
 double? _animationValue;
+double? _buttonAnimationValue;
 XFile? file;
 String? image;
+bool buttonLoading = false;
+bool buttonFinish = false;
+final RoundedLoadingButtonController _btnController =
+    RoundedLoadingButtonController();
 // final List<String> Roleitems = [
 //   'Club Presidents',
 //   'Vice Presidents',
@@ -64,7 +75,7 @@ List<String> sectors = [];
 List<String> departments = [];
 
 class _SectorAccountCreateState extends State<SectorAccountCreate>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   @override
   void initState() {
     fetchdata();
@@ -82,6 +93,19 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
         }
       });
     });
+    _buttonAnimationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _buttonAnimationController!.addListener(() {
+      setState(() {
+        _buttonAnimationValue = _buttonAnimationController!.value;
+        if (_buttonAnimationValue! >= 0.2 && _buttonAnimationValue! < 0.5) {
+          buttonLoading = true;
+        } else if (_buttonAnimationValue! > 0.5) {
+          buttonLoading = false;
+          buttonFinish = true;
+        }
+      });
+    });
   }
 
   void fetchdata() async {
@@ -91,6 +115,12 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
         .fetchCatagoires("catagories", "sectors", "sectors") as List<String>;
     departments = await HelperFunctions().fetchCatagoires(
         "catagories", "departments", "departments") as List<String>;
+  }
+
+  void _doSomething() async {
+    Timer(Duration(seconds: 3), () {
+      _btnController.success();
+    });
   }
 
   @override
@@ -828,76 +858,145 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                         height: 30,
                       ),
                       Consumer<CreateAccountButtonBuilder>(
-                        builder: (context, value, child) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                left: 50, right: 50, bottom: 10),
-                            child: SizedBox(
-                              height: 45,
-                              child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (file == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content:
-                                            Text("please upload your photo"),
-                                      ));
-                                    } else if (RoleValue == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content:
-                                            Text("please insert your role"),
-                                      ));
-                                    } else if (departmentValue == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content: Text(
-                                            "please insert your department"),
-                                      ));
-                                    } else if (sectorValue == null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                        content:
-                                            Text("please insert your sector"),
-                                      ));
-                                    } else if (_formkey.currentState!
-                                        .validate()) {
-                                      String imageUrl = await HelperFunctions()
-                                          .uploadImage(file, "student_picture");
+                        builder: (context, value, child) => Padding(
+                            padding: const EdgeInsets.fromLTRB(50, 0, 50, 10),
+                            child: RoundedLoadingButton(
+                                valueColor: Colors.black,
+                                elevation: 5,
+                                successColor: Colors.yellow,
+                                color: Colors.yellow,
+                                height: 45,
+                                width: MediaQuery.of(context).size.width,
+                                borderRadius: 10,
+                                controller: _btnController,
+                                onPressed: () async {
+                                  if (file == null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content: Text("please upload your photo"),
+                                    ));
+                                  } else if (RoleValue == null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content: Text("please insert your role"),
+                                    ));
+                                  } else if (departmentValue == null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content:
+                                          Text("please insert your department"),
+                                    ));
+                                  } else if (sectorValue == null) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(const SnackBar(
+                                      content:
+                                          Text("please insert your sector"),
+                                    ));
+                                  } else if (_formkey.currentState!
+                                      .validate()) {
+                                    String imageUrl = await HelperFunctions()
+                                        .uploadImage(file, "student_picture");
 
-                                      Member member = Member(
-                                          firstName:
-                                              _firstNameController.value.text,
-                                          lastName:
-                                              _lastNameController.value.text,
-                                          department: departmentValue,
-                                          gender: gender,
-                                          role: RoleValue,
-                                          sector: sectorValue,
-                                          studentId:
-                                              _studentIdController.value.text,
-                                          studentPhoto: imageUrl);
-                                      await CreateMemberAccount()
-                                          .createMemeberAccount(member);
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      backgroundColor: Colors.yellow),
-                                  child: Center(
-                                      child: Text(
-                                    value.buttonName!,
-                                    style: const TextStyle(
-                                        fontSize: 15,
-                                        letterSpacing: 1.5 + 1,
-                                        color: Colors.black),
-                                  ))),
-                            ),
-                          );
-                        },
-                      )
+                                    Member member = Member(
+                                        firstName:
+                                            _firstNameController.value.text,
+                                        lastName:
+                                            _lastNameController.value.text,
+                                        department: departmentValue,
+                                        gender: gender,
+                                        role: RoleValue,
+                                        sector: sectorValue,
+                                        studentId:
+                                            _studentIdController.value.text,
+                                        studentPhoto: imageUrl);
+                                    await CreateMemberAccount()
+                                        .createMemeberAccount(member);
+                                  }
+                                  _btnController.success();
+                                  await Future.delayed(
+                                      const Duration(seconds: 1));
+                                  Get.back();
+                                },
+                                child: Text(
+                                  value.buttonName.toString(),
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      letterSpacing: 1.5 + 1,
+                                      color: Colors.black),
+                                ))),
+                      ),
+
+                      // Consumer<CreateAccountButtonBuilder>(
+                      //   builder: (context, value, child) {
+                      //     return Padding(
+                      //       padding: const EdgeInsets.only(
+                      //           left: 50, right: 50, bottom: 10),
+                      //       child: SizedBox(
+                      //         height: 45,
+                      //         child: ElevatedButton(
+                      //             onPressed: () async {
+                      //               if (file == null) {
+                      //                 ScaffoldMessenger.of(context)
+                      //                     .showSnackBar(const SnackBar(
+                      //                   content:
+                      //                       Text("please upload your photo"),
+                      //                 ));
+                      //               } else if (RoleValue == null) {
+                      //                 ScaffoldMessenger.of(context)
+                      //                     .showSnackBar(const SnackBar(
+                      //                   content:
+                      //                       Text("please insert your role"),
+                      //                 ));
+                      //               } else if (departmentValue == null) {
+                      //                 ScaffoldMessenger.of(context)
+                      //                     .showSnackBar(const SnackBar(
+                      //                   content: Text(
+                      //                       "please insert your department"),
+                      //                 ));
+                      //               } else if (sectorValue == null) {
+                      //                 ScaffoldMessenger.of(context)
+                      //                     .showSnackBar(const SnackBar(
+                      //                   content:
+                      //                       Text("please insert your sector"),
+                      //                 ));
+                      //               } else if (_formkey.currentState!
+                      //                   .validate()) {
+                      //                 String imageUrl = await HelperFunctions()
+                      //                     .uploadImage(file, "student_picture");
+
+                      //                 Member member = Member(
+                      //                     firstName:
+                      //                         _firstNameController.value.text,
+                      //                     lastName:
+                      //                         _lastNameController.value.text,
+                      //                     department: departmentValue,
+                      //                     gender: gender,
+                      //                     role: RoleValue,
+                      //                     sector: sectorValue,
+                      //                     studentId:
+                      //                         _studentIdController.value.text,
+                      //                     studentPhoto: imageUrl);
+                      //                 await CreateMemberAccount()
+                      //                     .createMemeberAccount(member);
+                      //               }
+                      //             },
+                      //             style: ElevatedButton.styleFrom(
+                      //                 shape: RoundedRectangleBorder(
+                      //                     borderRadius:
+                      //                         BorderRadius.circular(10)),
+                      //                 backgroundColor: Colors.yellow),
+                      //             child: Center(
+                      //                 child: Text(
+                      //               value.buttonName!,
+                      //               style: const TextStyle(
+                      //                   fontSize: 15,
+                      //                   letterSpacing: 1.5 + 1,
+                      //                   color: Colors.black),
+                      //             ))),
+                      //       ),
+                      //     );
+                      //   },
+                      // )
                     ],
                   )),
             )
