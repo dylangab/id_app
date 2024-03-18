@@ -50,51 +50,24 @@ bool isLoading = false;
 double? _animationValue;
 XFile? file;
 String? image;
-final List<String> Roleitems = [
-  'Club Presidents',
-  'Vice Presidents',
-  'Treasurers',
-  'Secretaries',
-  'Event Coordinators',
-  'Marketing/Publicity Officers',
-  'Membership Coordinators',
-];
-final List<String> sectors = [
-  'Student Government/Student Council',
-  'Clubs and Organizations',
-  'Recreational Facilities',
-  'Student Services',
-  'Events and Programming',
-  'Food Services and Dining',
-  'Student Publications and Media',
-  'Volunteer and Community Engagement',
-  'Student Advocacy and Support',
-  'Financial Resources',
-  'Technology and IT Services',
-  'Student Union Facilities and Spaces'
-];
-final List<String> departments = [
-  'History',
-  'Philosophy',
-  'Linguistics',
-  'Theatre Arts/Drama',
-  'Psychology',
-  'Anthropology',
-  'Political Science',
-  'Economics',
-  'Geology',
-  'Computer Science',
-  'Electrical Engineering',
-  'Mechanical Engineering',
-  'Civil Engineering',
-  'Chemical Engineering',
-  'Information Technology'
-];
+// final List<String> Roleitems = [
+//   'Club Presidents',
+//   'Vice Presidents',
+//   'Treasurers',
+//   'Secretaries',
+//   'Event Coordinators',
+//   'Marketing/Publicity Officers',
+//   'Membership Coordinators',
+// ];
+List<String> RoleItems = [];
+List<String> sectors = [];
+List<String> departments = [];
 
 class _SectorAccountCreateState extends State<SectorAccountCreate>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {
+    fetchdata();
     super.initState();
     _animationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
@@ -111,27 +84,36 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
     });
   }
 
-  @override
-  void dispose() {
-    _animationController!.dispose();
-    _firstNameController.dispose();
-    _firstNode.dispose();
-    _lastNameController.dispose();
-    _LastNode.dispose();
-    _studentIdController.dispose();
-    _studentIdNode.dispose();
-    _department.dispose();
-    _departmentController.dispose();
-    _sectorController.dispose();
-    _sectorNode.dispose();
-    _roleController.dispose();
-    _roleNode.dispose();
-    _passwordController.dispose();
-    _passwordNode.dispose();
-    _confirmPasswordController.dispose();
-    _confirmPasswordNode.dispose();
-    super.dispose();
+  void fetchdata() async {
+    RoleItems = await HelperFunctions()
+        .fetchCatagoires("catagories", "roles", "roles") as List<String>;
+    sectors = await HelperFunctions()
+        .fetchCatagoires("catagories", "sectors", "sectors") as List<String>;
+    departments = await HelperFunctions().fetchCatagoires(
+        "catagories", "departments", "departments") as List<String>;
   }
+
+  @override
+  // void dispose() {
+  //   _animationController!.dispose();
+  //   _firstNameController.dispose();
+  //   _firstNode.dispose();
+  //   _lastNameController.dispose();
+  //   _LastNode.dispose();
+  //   _studentIdController.dispose();
+  //   _studentIdNode.dispose();
+  //   _department.dispose();
+  //   _departmentController.dispose();
+  //   _sectorController.dispose();
+  //   _sectorNode.dispose();
+  //   _roleController.dispose();
+  //   _roleNode.dispose();
+  //   _passwordController.dispose();
+  //   _passwordNode.dispose();
+  //   _confirmPasswordController.dispose();
+  //   _confirmPasswordNode.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -270,7 +252,7 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton2(
                               focusNode: _department,
-                              hint: Padding(
+                              hint: const Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: Text(
                                   "Choose your department",
@@ -365,7 +347,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                 searchMatchFn: (item, searchValue) {
                                   return item.value
                                       .toString()
-                                      .contains(searchValue);
+                                      .toLowerCase()
+                                      .contains(searchValue.toLowerCase());
                                 },
                               ),
                             ),
@@ -385,11 +368,11 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton2(
                                 focusNode: _sectorNode,
-                                hint: Padding(
-                                  padding: const EdgeInsets.only(left: 10),
+                                hint: const Padding(
+                                  padding: EdgeInsets.only(left: 10),
                                   child: Text(
                                     "Choose your sector",
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                                 items: sectors
@@ -482,7 +465,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                   searchMatchFn: (item, searchValue) {
                                     return item.value
                                         .toString()
-                                        .contains(searchValue);
+                                        .toLowerCase()
+                                        .contains(searchValue.toLowerCase());
                                   },
                                 ),
                               ),
@@ -593,14 +577,14 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton2(
                               focusNode: _roleNode,
-                              hint: Padding(
-                                padding: const EdgeInsets.only(left: 10),
+                              hint: const Padding(
+                                padding: EdgeInsets.only(left: 10),
                                 child: Text(
                                   "Choose your role",
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ),
-                              items: Roleitems.map((String item) =>
+                              items: RoleItems.map((String item) =>
                                   DropdownMenuItem<String>(
                                     value: item,
                                     child: Padding(
@@ -685,7 +669,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                 searchMatchFn: (item, searchValue) {
                                   return item.value
                                       .toString()
-                                      .contains(searchValue);
+                                      .toLowerCase()
+                                      .contains(searchValue.toLowerCase());
                                 },
                               ),
                             ),
@@ -718,11 +703,11 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                   borderRadius: BorderRadius.circular(10)),
                               child: DottedBorder(
                                 strokeWidth: 1,
-                                dashPattern: [5, 5],
+                                dashPattern: const [5, 5],
                                 radius: const Radius.circular(10),
                                 color: Colors.yellow,
                                 child: AnimatedContainer(
-                                  duration: Duration(seconds: 2),
+                                  duration: const Duration(seconds: 2),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
