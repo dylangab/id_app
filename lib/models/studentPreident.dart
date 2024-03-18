@@ -6,11 +6,13 @@ class StudentPreident extends Member {
   String? signature;
   String? email;
   String? password;
+  String? stamp;
 
   StudentPreident(
       {this.signature,
       this.email,
       required this.password,
+      required this.stamp,
       required String? firstName,
       required String? lastName,
       required String? department,
@@ -37,7 +39,7 @@ class CreateStudentPresidentAccount {
             email: studentPreident.email!, password: studentPreident.password!)
         .then((value) => FirebaseFirestore.instance
                 .collection("student_president_account")
-                .doc(value.toString())
+                .doc(value.user!.uid)
                 .set({
               "password": studentPreident.password,
               "email": studentPreident.email,
@@ -45,9 +47,8 @@ class CreateStudentPresidentAccount {
                   "${studentPreident.firstName} ${studentPreident.lastName}",
               "department": studentPreident.department,
               "studentId": studentPreident.studentId,
-              "role": studentPreident.role,
+              "stamp": studentPreident.stamp,
               "gender": studentPreident.gender,
-              "sector": studentPreident.sector,
               "studentPhoto": studentPreident.studentPhoto,
               "signature": studentPreident.signature
             }));

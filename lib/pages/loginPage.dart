@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,7 +15,9 @@ TextEditingController _emailController = TextEditingController();
 TextEditingController _passwordController = TextEditingController();
 FocusNode _emailNode = FocusNode();
 FocusNode _passwordNode = FocusNode();
-bool _passwordVisability = false;
+bool _passwordVisability = true;
+RoundedLoadingButtonController _buttonController =
+    RoundedLoadingButtonController();
 
 class _LoginPageState extends State<LoginPage> {
   @override
@@ -22,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
     _emailNode.dispose();
     _passwordController.dispose();
     _passwordNode.dispose();
+
     super.dispose();
   }
 
@@ -70,6 +75,8 @@ class _LoginPageState extends State<LoginPage> {
                     shape:
                         const OutlineInputBorder(borderSide: BorderSide.none),
                     child: TextFormField(
+                      controller: _emailController,
+                      focusNode: _emailNode,
                       cursorColor: Colors.yellow,
                       decoration: const InputDecoration(
                           hintText: "Email",
@@ -91,6 +98,8 @@ class _LoginPageState extends State<LoginPage> {
                     shape:
                         const OutlineInputBorder(borderSide: BorderSide.none),
                     child: TextFormField(
+                      controller: _passwordController,
+                      focusNode: _passwordNode,
                       cursorColor: Colors.yellow,
                       obscureText: _passwordVisability,
                       decoration: InputDecoration(
@@ -104,11 +113,11 @@ class _LoginPageState extends State<LoginPage> {
                               },
                               icon: _passwordVisability
                                   ? const Icon(
-                                      Icons.visibility,
-                                      color: Colors.yellow,
+                                      Icons.visibility_off,
+                                      color: Colors.black,
                                     )
-                                  : const Icon(Icons.visibility_off,
-                                      color: Colors.yellow)),
+                                  : const Icon(Icons.visibility,
+                                      color: Colors.black)),
                           border: const OutlineInputBorder(
                               borderSide: BorderSide.none),
                           hintText: "Password",
@@ -125,49 +134,36 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 50, right: 50),
-            child: SizedBox(
-              height: 45,
-              child: ElevatedButton(
-                  onPressed: () async {
+            child: RoundedLoadingButton(
+                color: Colors.yellow,
+                valueColor: Colors.black,
+                borderRadius: 10,
+                height: 45,
+                width: MediaQuery.of(context).size.width,
+                controller: _buttonController,
+                onPressed: () async {
+                  try {
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: _emailController.value.text,
+                        password: _passwordController.value.text);
+
+                    _buttonController.start();
+                    await Future.delayed(Duration(seconds: 1));
+                    _buttonController.stop();
                     Get.to(() => const StudentPreidentHomePage());
-                    /*   try {
-                      await FirebaseAuth.instance
-                          .signInWithEmailAndPassword(
-                              email: _emailController.value.text,
-                              password: _passwordController.value.text)
-                          .then((value) => null);
-                    } on FirebaseAuthException catch (e) {
-                      if (e.code == 'user-not-found') {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text("No user found for that email."),
-                        ));
-
-                        print('No user found for that email.');
-                      } else if (e.code == 'wrong-password') {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content:
-                              Text("Wrong password provided for that user."),
-                        ));
-
-                        print('Wrong password provided for that user.');
-                      }
-                    }  */
-                  },
-                  style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      backgroundColor: Colors.yellow),
-                  child: const Center(
-                      child: Text(
-                    "Login",
-                    style: TextStyle(
-                        fontSize: 15,
-                        letterSpacing: 1.5 + 1,
-                        color: Colors.black),
-                  ))),
-            ),
+                  } catch (e) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(e.toString())));
+                    _buttonController.stop();
+                  }
+                },
+                child: const Text(
+                  "Login",
+                  style: TextStyle(
+                      fontSize: 15,
+                      letterSpacing: 1.5 + 1,
+                      color: Colors.black),
+                )),
           )
         ],
       ),

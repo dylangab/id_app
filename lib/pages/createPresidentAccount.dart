@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:id_app/Utils/helperFunctions.dart';
+import 'package:id_app/models/studentPreident.dart';
+import 'package:id_app/pages/loginPage.dart';
+import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
@@ -1021,14 +1024,35 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                                     .uploadImage(signiture, "signiture");
                                 String stampPicUrl = await HelperFunctions()
                                     .uploadImage(stamp, "stamp");
+                                StudentPreident studentPreident =
+                                    StudentPreident(
+                                        email: _emailController.value.text,
+                                        signature: signiturePicUrl,
+                                        password:
+                                            _passwordController.value.text,
+                                        stamp: stampPicUrl,
+                                        firstName:
+                                            _firstNameController.value.text,
+                                        lastName:
+                                            _lastNameController.value.text,
+                                        department: departmentValue,
+                                        studentId:
+                                            _studentIdController.value.text,
+                                        role: "",
+                                        gender: gender,
+                                        sector: "",
+                                        studentPhoto: studentPicUrl);
+
+                                await CreateStudentPresidentAccount()
+                                    .createAccount(studentPreident);
                               }
                               _btnController.success();
                               await Future.delayed(const Duration(seconds: 1));
-                              Get.back();
+                              Get.to(() => const LoginPage());
                             },
-                            child: Text(
+                            child: const Text(
                               "Create Account",
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 15,
                                   letterSpacing: 1.5 + 1,
                                   color: Colors.black),

@@ -24,6 +24,7 @@ class StudentID extends StudentPreident {
       required this.universitystamp,
       required this.website,
       String? email,
+      String? stamp,
       String? password,
       String? signature,
       String? firstName,
@@ -35,6 +36,7 @@ class StudentID extends StudentPreident {
       String? sector,
       String? studentPhoto})
       : super(
+            stamp: stamp,
             email: email,
             password: password,
             lastName: lastName,
