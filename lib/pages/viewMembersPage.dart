@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:id_app/pages/createSectorAccountPage.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/pages/SearchPage.dart';
@@ -14,96 +16,107 @@ class ViewMembersPage extends StatefulWidget {
   State<ViewMembersPage> createState() => _ViewMembersPageState();
 }
 
-List<demo> list = [
-  demo(name: "blake", phoneNo: "8989898", isselected: false),
-  demo(name: "tim", phoneNo: "8989898", isselected: false),
-  demo(name: "penny", phoneNo: "8989898", isselected: false),
-  demo(name: "fin", phoneNo: "8989898", isselected: false),
-  demo(name: "buddy", phoneNo: "8989898", isselected: false),
-  demo(name: "alan", phoneNo: "8989898", isselected: false),
-  demo(name: "joe", phoneNo: "8989898", isselected: false),
-  demo(name: "blake", phoneNo: "8989898", isselected: false),
-  demo(name: "tim", phoneNo: "8989898", isselected: false),
-  demo(name: "penny", phoneNo: "8989898", isselected: false),
-  demo(name: "fin", phoneNo: "8989898", isselected: false),
-  demo(name: "buddy", phoneNo: "8989898", isselected: false),
-  demo(name: "alan", phoneNo: "8989898", isselected: false),
-  demo(name: "joe", phoneNo: "8989898", isselected: false),
-];
+String? header = Sectors[0];
+List<DocumentSnapshot> members = [];
+List<String> Sectors = ["Cafe", "kjgh", "fdaf"];
 
 class _ViewMembersPageState extends State<ViewMembersPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<DropdownValueController>(
-      builder: (context, value, child) {
-        return Scaffold(
-          backgroundColor: const Color.fromARGB(255, 233, 236, 239),
-          body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-            const SizedBox(
-              height: 50,
-            ),
-            Padding(
-              /* const SizedBox(
-              height: 190,
-            ),*/
-              padding: const EdgeInsets.only(left: 15, right: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CustomDropdown(
-                    initialItem: value.Sectors[0],
-                    items: value.Sectors,
-                    onChanged: (p0) {
-                      value.buttonValue = p0;
-                    },
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        Get.to(() => const searchPage(),
-                            transition: Transition.fadeIn);
-                      },
-                      icon: const Icon(Icons.search_sharp, size: 14 + 15))
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Center(
-              child: Text("${value.buttonValue}",
-                  style: const TextStyle(
-                    fontSize: 30 - 5,
-                    letterSpacing: 1.5 + 1,
-                  )),
-            ),
-            Expanded(
-              child: Container(
-                child: AnimationConfiguration.staggeredList(
-                  position: 0,
-                  child: ScaleAnimation(
-                    child: FadeInAnimation(
-                      child: ListView.builder(
-                        itemCount: list.length,
-                        itemBuilder: (context, index) {
-                          return studentListTile(
-                              list[index].name,
-                              list[index].phoneNo,
-                              list[index].isselected,
-                              index);
-                        },
-                      ),
-                    ),
-                  ),
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 233, 236, 239),
+      body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+        const SizedBox(
+          height: 50,
+        ),
+        Padding(
+          /* const SizedBox(
+          height: 190,
+        ),*/
+          padding: const EdgeInsets.only(left: 15, right: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 100,
+                child: CustomDropdown(
+                  initialItem: Sectors[0],
+                  items: Sectors,
+                  onChanged: (p0) {
+                    setState(() {
+                      header = p0;
+                    });
+                  },
                 ),
               ),
-            )
-          ]),
-        );
-      },
+              IconButton(
+                  onPressed: () {
+                    Get.to(() => const searchPage(),
+                        transition: Transition.fadeIn);
+                  },
+                  icon: const Icon(Icons.search_sharp, size: 14 + 15))
+            ],
+          ),
+        ),
+        const SizedBox(
+          height: 30,
+        ),
+        Center(
+          child: Text(header!,
+              style: const TextStyle(
+                fontSize: 30 - 5,
+                letterSpacing: 1.5 + 1,
+              )),
+        ),
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection("members").snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.yellow,
+                      ),
+                    ),
+                  );
+                }
+                if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                  members = snapshot.data!.docs;
+                  return Container(
+                    child: AnimationConfiguration.staggeredList(
+                      position: 0,
+                      child: ScaleAnimation(
+                        child: FadeInAnimation(
+                          child: ListView.builder(
+                            itemCount: members.length,
+                            itemBuilder: (context, index) {
+                              return studentListTile(
+                                  members[index]["fullName"],
+                                  members[index]["studentId"],
+                                  members[index]["studentPhoto"],
+                                  members[index]["studentId"]);
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container(
+                    child: Center(
+                      child: Text("server error"),
+                    ),
+                  );
+                }
+              }),
+        )
+      ]),
     );
   }
 
-  Widget studentListTile(String? name, phoneNo, bool? isselected, int index) {
+  Widget studentListTile(String? name, phoneNo, String photo, String id) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
       child: Material(
@@ -114,11 +127,13 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
           tileColor: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10), side: BorderSide.none),
-          leading: const CircleAvatar(),
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(photo),
+          ),
           title: Text("$name"),
           subtitle: Text("$phoneNo"),
           onTap: () {
-            Get.to(() => const StudentInfoPage());
+            Get.to(() => const StudentInfoPage(), arguments: id);
           },
         ),
       ),

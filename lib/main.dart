@@ -4,6 +4,8 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/pages/createPresidentAccount.dart';
 import 'package:id_app/pages/loginPage.dart';
+import 'package:id_app/pages/studentPreidentHomePage.dart';
+import 'package:id_app/pages/viewMembersPage.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const GetMaterialApp(
-      home: LoginPage(),
+      home: StudentPreidentHomePage(),
     );
   }
 }

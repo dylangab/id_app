@@ -61,15 +61,7 @@ bool buttonLoading = false;
 bool buttonFinish = false;
 final RoundedLoadingButtonController _btnController =
     RoundedLoadingButtonController();
-// final List<String> Roleitems = [
-//   'Club Presidents',
-//   'Vice Presidents',
-//   'Treasurers',
-//   'Secretaries',
-//   'Event Coordinators',
-//   'Marketing/Publicity Officers',
-//   'Membership Coordinators',
-// ];
+
 List<String> RoleItems = [];
 List<String> sectors = [];
 List<String> departments = [];

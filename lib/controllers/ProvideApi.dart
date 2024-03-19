@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:id_app/pages/createSectorAccountPage.dart';
 
 //S   s w
 class HeadingController extends ChangeNotifier {
@@ -62,7 +63,7 @@ class MultiIdGenerate extends ChangeNotifier {
 
 class DropdownValueController extends ChangeNotifier {
   List<String> Sectors = ["Cafe", "kjgh", "fdaf"];
-  String? buttonValue;
+  String? buttonValue = sectors[0];
 
   Future<void> fetchSectors() async {
     DocumentSnapshot doc =

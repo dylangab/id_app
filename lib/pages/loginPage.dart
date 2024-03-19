@@ -148,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                         password: _passwordController.value.text);
 
                     _buttonController.start();
-                    await Future.delayed(Duration(seconds: 1));
+                    await Future.delayed(const Duration(seconds: 1));
                     _buttonController.stop();
                     Get.to(() => const StudentPreidentHomePage());
                   } catch (e) {
