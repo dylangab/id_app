@@ -133,7 +133,9 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
           title: Text("$name"),
           subtitle: Text("$phoneNo"),
           onTap: () {
-            Get.to(() => const StudentInfoPage(), arguments: id);
+            Provider.of<studentInfoButtonBuilder>(listen: false, context)
+                .passValue(id, false, "Generate ID");
+            Get.to(() => const StudentInfoPage());
           },
         ),
       ),

@@ -84,3 +84,40 @@ class StudentID extends StudentPreident {
     return userList;
   }
 }
+
+class IdDemo {
+  String? studentName;
+  String? id;
+  String? role;
+  String? department;
+  String? sector;
+  String? photo;
+  IdDemo(
+      {required this.department,
+      required this.id,
+      required this.photo,
+      required this.role,
+      required this.sector,
+      required this.studentName});
+
+  factory IdDemo.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+    Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    return IdDemo(
+        department: data["department"],
+        id: data["studentId"],
+        photo: data["studentPhoto"],
+        role: data["role"],
+        sector: data["sector"],
+        studentName: data["fullName"]);
+  }
+  Future<List<IdDemo>> gettudentList() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('members').get();
+
+    List<IdDemo> userList = querySnapshot.docs
+        .map((doc) => IdDemo.fromDocumentSnapshot(doc))
+        .toList();
+
+    return userList;
+  }
+}

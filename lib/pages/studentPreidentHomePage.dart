@@ -29,6 +29,8 @@ TextEditingController roleController = TextEditingController();
 FocusNode roleNode = FocusNode();
 TextEditingController departmentController = TextEditingController();
 FocusNode departmentNode = FocusNode();
+TextEditingController _searchController = TextEditingController();
+FocusNode _searchNode = FocusNode();
 
 class _StudentPreidentHomePageState extends State<StudentPreidentHomePage> {
   @override
@@ -183,6 +185,8 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage> {
                                                     borderSide:
                                                         BorderSide.none),
                                                 child: TextField(
+                                                  controller: _searchController,
+                                                  focusNode: _searchNode,
                                                   decoration: InputDecoration(
                                                       hintText:
                                                           "Enter the student ID",
@@ -222,7 +226,8 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage> {
                                                                 listen: false,
                                                                 context)
                                                             .passValue(
-                                                                studentId,
+                                                                _searchController
+                                                                    .value.text,
                                                                 true,
                                                                 "Generate ID");
                                                         Get.to(() =>
