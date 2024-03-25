@@ -77,3 +77,20 @@ class DropdownValueController extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class ValuePass extends ChangeNotifier {
+  String roleValue = "";
+  String departmentValue = "";
+  String sectorValue = "";
+  void roleValuePass(String v) {
+    roleValue = v;
+  }
+
+  void departmentValuePass(String v) {
+    departmentValue = v;
+  }
+
+  void sectorValuePass(String v) {
+    sectorValue = v;
+  }
+}

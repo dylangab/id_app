@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/models/member.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
@@ -269,6 +270,7 @@ class _StudentInfoPageState extends State<StudentInfoPage> {
                           child: ElevatedButton(
                               onPressed: () async {
                                 if (value.generate == true) {
+                                  await PdfApi().generateSingleId(member!);
                                   // await PdfApi().generateMultiPage().then(
                                   //     (value) async => PDFViewer(
                                   //         document: await PDFDocument.fromFile(value)));

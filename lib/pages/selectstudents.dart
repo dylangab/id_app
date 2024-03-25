@@ -13,21 +13,20 @@ class selectstudentsPage extends StatefulWidget {
 }
 
 List<Student> list = [
-  Student(name: "blake", phoneNo: "8989898", isselected: false),
-  Student(name: "tim", phoneNo: "8989898", isselected: false),
-  Student(name: "penny", phoneNo: "8989898", isselected: false),
-  Student(name: "fin", phoneNo: "8989898", isselected: false),
-  Student(name: "buddy", phoneNo: "8989898", isselected: false),
-  Student(name: "alan", phoneNo: "8989898", isselected: false),
-  Student(name: "joe", phoneNo: "8989898", isselected: false),
+  Student(name: "blake", phoneNo: "8989898"),
+  Student(name: "tim", phoneNo: "8989898"),
+  Student(name: "penny", phoneNo: "8989898"),
+  Student(name: "fin", phoneNo: "8989898"),
+  Student(name: "buddy", phoneNo: "8989898"),
+  Student(name: "alan", phoneNo: "8989898"),
+  Student(name: "joe", phoneNo: "8989898"),
 ];
 List<Student>? demo = [];
+bool isselected = false;
 
 class _selectstudentsPageState extends State<selectstudentsPage> {
   @override
   Widget build(BuildContext context) {
-    int selectedindex = -1;
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 233, 236, 239),
       body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -74,8 +73,8 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
           child: ListView.builder(
             itemCount: list.length,
             itemBuilder: (context, index) {
-              return studentListTile(list[index].name, list[index].phoneNo,
-                  list[index].isselected, index);
+              return studentListTile(
+                  list[index].name, list[index].phoneNo, index);
             },
           ),
         ),
@@ -88,6 +87,7 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
             height: 45,
             child: ElevatedButton(
                 onPressed: () async {
+                  print(demo);
                   // await PdfApi().generateMultiPage().then((value) async =>
                   //     PDFViewer(document: await PDFDocument.fromFile(value)));
                 },
@@ -109,7 +109,7 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
     );
   }
 
-  Widget studentListTile(String? name, phoneNo, bool? isselected, int index) {
+  Widget studentListTile(String? name, phoneNo, int index) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
       child: Material(
@@ -123,7 +123,7 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
           leading: const CircleAvatar(),
           title: Text("$name"),
           subtitle: Text("$phoneNo"),
-          trailing: isselected!
+          trailing: demo!.contains(list[index])
               ? const Icon(
                   Icons.check_circle,
                   color: Colors.yellow,
@@ -135,12 +135,19 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
           onTap: () {
             print(MediaQuery.of(context).size.height);
             setState(() {
-              list[index].isselected = !list[index].isselected!;
-              if (list[index].isselected == true) {
+              if (!demo!.contains(list[index])) {
                 demo!.add(list[index]);
-              } else if (list[index].isselected == false) {
+                isselected = true;
+              } else if (demo!.contains(list[index])) {
                 demo!.removeWhere((element) => element == list[index]);
+                isselected = false;
               }
+              // list[index].isselected = !list[index].isselected!;
+              // if (list[index].isselected == true) {
+              //   demo!.add(list[index]);
+              // } else if (list[index].isselected == false) {
+              //   demo!.removeWhere((element) => element == list[index]);
+              // }
             });
           },
         ),
@@ -151,10 +158,9 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
 
 class Student {
   String? name, phoneNo;
-  bool? isselected;
+
   Student({
     required this.name,
     required this.phoneNo,
-    required this.isselected,
   });
 }
