@@ -21,6 +21,7 @@ List<Student> list = [
   Student(name: "alan", phoneNo: "8989898"),
   Student(name: "joe", phoneNo: "8989898"),
 ];
+
 List<Student>? demo = [];
 bool isselected = false;
 
@@ -34,9 +35,6 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
           height: 50,
         ),
         Padding(
-          /* const SizedBox(
-            height: 190,
-          ),*/
           padding: const EdgeInsets.only(left: 15, right: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -123,31 +121,30 @@ class _selectstudentsPageState extends State<selectstudentsPage> {
           leading: const CircleAvatar(),
           title: Text("$name"),
           subtitle: Text("$phoneNo"),
-          trailing: demo!.contains(list[index])
-              ? const Icon(
-                  Icons.check_circle,
-                  color: Colors.yellow,
-                )
-              : const Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.grey,
-                ),
+          trailing: Visibility(
+              visible: true,
+              maintainSize: false,
+              maintainState: false,
+              child: demo!.contains(list[index])
+                  ? const Icon(
+                      Icons.check_circle,
+                      color: Colors.yellow,
+                    )
+                  : const Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.grey,
+                    )),
           onTap: () {
-            print(MediaQuery.of(context).size.height);
             setState(() {
               if (!demo!.contains(list[index])) {
                 demo!.add(list[index]);
                 isselected = true;
               } else if (demo!.contains(list[index])) {
+                Iterable<Student>? result;
                 demo!.removeWhere((element) => element == list[index]);
+
                 isselected = false;
               }
-              // list[index].isselected = !list[index].isselected!;
-              // if (list[index].isselected == true) {
-              //   demo!.add(list[index]);
-              // } else if (list[index].isselected == false) {
-              //   demo!.removeWhere((element) => element == list[index]);
-              // }
             });
           },
         ),

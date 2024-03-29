@@ -5,6 +5,7 @@ import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/pages/createPresidentAccount.dart';
 import 'package:id_app/pages/createSectorAccountPage.dart';
 import 'package:id_app/pages/loginPage.dart';
+import 'package:id_app/pages/selectstudents.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:id_app/pages/viewMembersPage.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,9 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => MembersData()),
+        ChangeNotifierProvider(create: (context) => FilterData()),
+        ChangeNotifierProvider(create: (context) => SelectStudentPageBuilder()),
         ChangeNotifierProvider(
           create: (context) => ValuePass(),
         ),
@@ -44,7 +48,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const GetMaterialApp(
-      home: ViewMembersPage(),
+      home: StudentPreidentHomePage(),
     );
   }
 }

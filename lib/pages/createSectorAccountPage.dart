@@ -264,140 +264,25 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                       const SizedBox(
                         height: 15 + 15,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15, right: 15),
-                        child: Material(
-                          elevation: 5,
-                          shape: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton2(
-                              focusNode: _department,
-                              hint: const Padding(
-                                padding: const EdgeInsets.only(left: 10),
-                                child: Text(
-                                  "Choose your department",
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              items: departments
-                                  .map((String item) =>
-                                      DropdownMenuItem<String>(
-                                        value: item,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: Text(
-                                            item,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ))
-                                  .toList(),
-                              value: departmentValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  departmentValue = value.toString();
-                                });
-                              },
-                              buttonStyleData: ButtonStyleData(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 65,
-                                  elevation: 5,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        style: BorderStyle.none,
-                                      ))),
-                              iconStyleData: const IconStyleData(
-                                icon: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                ),
-                                iconSize: 14,
-                                iconEnabledColor: Colors.yellow,
-                                iconDisabledColor: Colors.grey,
-                              ),
-                              dropdownStyleData: DropdownStyleData(
-                                  maxHeight: 200,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                    color: Colors.white,
-                                  )),
-                              menuItemStyleData: const MenuItemStyleData(
-                                height: 40,
-                                padding: EdgeInsets.only(left: 14, right: 14),
-                              ),
-                              dropdownSearchData: DropdownSearchData(
-                                searchController: _departmentController,
-                                searchInnerWidgetHeight: 50,
-                                searchInnerWidget: Container(
-                                  height: 50,
-                                  padding: const EdgeInsets.only(
-                                    top: 8,
-                                    bottom: 4,
-                                    right: 8,
-                                    left: 8,
-                                  ),
-                                  child: TextFormField(
-                                    expands: true,
-                                    maxLines: null,
-                                    controller: _departmentController,
-                                    focusNode: _department,
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 8,
-                                      ),
-                                      hintText: 'Search for an item...',
-                                      hintStyle: const TextStyle(fontSize: 12),
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                searchMatchFn: (item, searchValue) {
-                                  return item.value
-                                      .toString()
-                                      .toLowerCase()
-                                      .contains(searchValue.toLowerCase());
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 15 + 15,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15, right: 15),
-                        child: Material(
+                      Consumer<MembersData>(
+                        builder: (context, value, child) => Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 15),
+                          child: Material(
                             elevation: 5,
                             shape: OutlineInputBorder(
                                 borderSide: BorderSide.none,
                                 borderRadius: BorderRadius.circular(10)),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton2(
-                                focusNode: _sectorNode,
+                                focusNode: _department,
                                 hint: const Padding(
-                                  padding: EdgeInsets.only(left: 10),
+                                  padding: const EdgeInsets.only(left: 10),
                                   child: Text(
-                                    "Choose your sector",
-                                    style: TextStyle(fontSize: 16),
+                                    "Choose your department",
+                                    style: const TextStyle(fontSize: 16),
                                   ),
                                 ),
-                                items: sectors
+                                items: value.departmentList
                                     .map((String item) =>
                                         DropdownMenuItem<String>(
                                           value: item,
@@ -415,10 +300,10 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                           ),
                                         ))
                                     .toList(),
-                                value: sectorValue,
+                                value: departmentValue,
                                 onChanged: (value) {
                                   setState(() {
-                                    sectorValue = value.toString();
+                                    departmentValue = value.toString();
                                   });
                                 },
                                 buttonStyleData: ButtonStyleData(
@@ -451,7 +336,7 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                   padding: EdgeInsets.only(left: 14, right: 14),
                                 ),
                                 dropdownSearchData: DropdownSearchData(
-                                  searchController: _sectorController,
+                                  searchController: _departmentController,
                                   searchInnerWidgetHeight: 50,
                                   searchInnerWidget: Container(
                                     height: 50,
@@ -464,8 +349,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                     child: TextFormField(
                                       expands: true,
                                       maxLines: null,
-                                      controller: _sectorController,
-                                      focusNode: _sectorNode,
+                                      controller: _departmentController,
+                                      focusNode: _department,
                                       decoration: InputDecoration(
                                         isDense: true,
                                         contentPadding:
@@ -492,7 +377,130 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                   },
                                 ),
                               ),
-                            )),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15 + 15,
+                      ),
+                      Consumer<MembersData>(
+                        builder: (context, value, child) => Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 15),
+                          child: Material(
+                              elevation: 5,
+                              shape: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton2(
+                                  focusNode: _sectorNode,
+                                  hint: const Padding(
+                                    padding: EdgeInsets.only(left: 10),
+                                    child: Text(
+                                      "Choose your sector",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  items: value.sectorList
+                                      .map((String item) =>
+                                          DropdownMenuItem<String>(
+                                            value: item,
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10),
+                                              child: Text(
+                                                item,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.black,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ))
+                                      .toList(),
+                                  value: sectorValue,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      sectorValue = value.toString();
+                                    });
+                                  },
+                                  buttonStyleData: ButtonStyleData(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 65,
+                                      elevation: 5,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            style: BorderStyle.none,
+                                          ))),
+                                  iconStyleData: const IconStyleData(
+                                    icon: Icon(
+                                      Icons.arrow_forward_ios_outlined,
+                                    ),
+                                    iconSize: 14,
+                                    iconEnabledColor: Colors.yellow,
+                                    iconDisabledColor: Colors.grey,
+                                  ),
+                                  dropdownStyleData: DropdownStyleData(
+                                      maxHeight: 200,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(14),
+                                        color: Colors.white,
+                                      )),
+                                  menuItemStyleData: const MenuItemStyleData(
+                                    height: 40,
+                                    padding:
+                                        EdgeInsets.only(left: 14, right: 14),
+                                  ),
+                                  dropdownSearchData: DropdownSearchData(
+                                    searchController: _sectorController,
+                                    searchInnerWidgetHeight: 50,
+                                    searchInnerWidget: Container(
+                                      height: 50,
+                                      padding: const EdgeInsets.only(
+                                        top: 8,
+                                        bottom: 4,
+                                        right: 8,
+                                        left: 8,
+                                      ),
+                                      child: TextFormField(
+                                        expands: true,
+                                        maxLines: null,
+                                        controller: _sectorController,
+                                        focusNode: _sectorNode,
+                                        decoration: InputDecoration(
+                                          isDense: true,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 8,
+                                          ),
+                                          hintText: 'Search for an item...',
+                                          hintStyle:
+                                              const TextStyle(fontSize: 12),
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide.none,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    searchMatchFn: (item, searchValue) {
+                                      return item.value
+                                          .toString()
+                                          .toLowerCase()
+                                          .contains(searchValue.toLowerCase());
+                                    },
+                                  ),
+                                ),
+                              )),
+                        ),
                       ),
                       const SizedBox(
                         height: 15 + 15,
@@ -589,111 +597,118 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                       const SizedBox(
                         height: 15 + 15,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15, right: 15),
-                        child: Material(
-                          elevation: 5,
-                          shape: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton2(
-                              focusNode: _roleNode,
-                              hint: const Padding(
-                                padding: EdgeInsets.only(left: 10),
-                                child: Text(
-                                  "Choose your role",
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ),
-                              items: RoleItems.map((String item) =>
-                                  DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        item,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  )).toList(),
-                              value: RoleValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  RoleValue = value.toString();
-                                });
-                              },
-                              buttonStyleData: ButtonStyleData(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 65,
-                                  elevation: 5,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                        style: BorderStyle.none,
-                                      ))),
-                              iconStyleData: const IconStyleData(
-                                icon: Icon(
-                                  Icons.arrow_forward_ios_outlined,
-                                ),
-                                iconSize: 14,
-                                iconEnabledColor: Colors.yellow,
-                                iconDisabledColor: Colors.grey,
-                              ),
-                              dropdownStyleData: DropdownStyleData(
-                                  maxHeight: 200,
-                                  width: MediaQuery.of(context).size.width,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(14),
-                                    color: Colors.white,
-                                  )),
-                              menuItemStyleData: const MenuItemStyleData(
-                                height: 40,
-                                padding: EdgeInsets.only(left: 14, right: 14),
-                              ),
-                              dropdownSearchData: DropdownSearchData(
-                                searchController: _roleController,
-                                searchInnerWidgetHeight: 50,
-                                searchInnerWidget: Container(
-                                  height: 50,
-                                  padding: const EdgeInsets.only(
-                                    top: 8,
-                                    bottom: 4,
-                                    right: 8,
-                                    left: 8,
-                                  ),
-                                  child: TextFormField(
-                                    expands: true,
-                                    maxLines: null,
-                                    controller: _roleController,
-                                    focusNode: _roleNode,
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      contentPadding:
-                                          const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 8,
-                                      ),
-                                      hintText: 'Search for an item...',
-                                      hintStyle: const TextStyle(fontSize: 12),
-                                      border: OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
+                      Consumer<MembersData>(
+                        builder: (context, value, child) => Padding(
+                          padding: const EdgeInsets.only(left: 15, right: 15),
+                          child: Material(
+                            elevation: 5,
+                            shape: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton2(
+                                focusNode: _roleNode,
+                                hint: const Padding(
+                                  padding: EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    "Choose your role",
+                                    style: const TextStyle(fontSize: 16),
                                   ),
                                 ),
-                                searchMatchFn: (item, searchValue) {
-                                  return item.value
-                                      .toString()
-                                      .toLowerCase()
-                                      .contains(searchValue.toLowerCase());
+                                items: value.roleList
+                                    .map((String item) =>
+                                        DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 10),
+                                            child: Text(
+                                              item,
+                                              style: const TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.black,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ))
+                                    .toList(),
+                                value: RoleValue,
+                                onChanged: (value) {
+                                  setState(() {
+                                    RoleValue = value.toString();
+                                  });
                                 },
+                                buttonStyleData: ButtonStyleData(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 65,
+                                    elevation: 5,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          style: BorderStyle.none,
+                                        ))),
+                                iconStyleData: const IconStyleData(
+                                  icon: Icon(
+                                    Icons.arrow_forward_ios_outlined,
+                                  ),
+                                  iconSize: 14,
+                                  iconEnabledColor: Colors.yellow,
+                                  iconDisabledColor: Colors.grey,
+                                ),
+                                dropdownStyleData: DropdownStyleData(
+                                    maxHeight: 200,
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14),
+                                      color: Colors.white,
+                                    )),
+                                menuItemStyleData: const MenuItemStyleData(
+                                  height: 40,
+                                  padding: EdgeInsets.only(left: 14, right: 14),
+                                ),
+                                dropdownSearchData: DropdownSearchData(
+                                  searchController: _roleController,
+                                  searchInnerWidgetHeight: 50,
+                                  searchInnerWidget: Container(
+                                    height: 50,
+                                    padding: const EdgeInsets.only(
+                                      top: 8,
+                                      bottom: 4,
+                                      right: 8,
+                                      left: 8,
+                                    ),
+                                    child: TextFormField(
+                                      expands: true,
+                                      maxLines: null,
+                                      controller: _roleController,
+                                      focusNode: _roleNode,
+                                      decoration: InputDecoration(
+                                        isDense: true,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 8,
+                                        ),
+                                        hintText: 'Search for an item...',
+                                        hintStyle:
+                                            const TextStyle(fontSize: 12),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  searchMatchFn: (item, searchValue) {
+                                    return item.value
+                                        .toString()
+                                        .toLowerCase()
+                                        .contains(searchValue.toLowerCase());
+                                  },
+                                ),
                               ),
                             ),
                           ),

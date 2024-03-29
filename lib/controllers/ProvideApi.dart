@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:id_app/models/member.dart';
 import 'package:id_app/pages/createSectorAccountPage.dart';
 
 //S   s w
@@ -92,5 +93,79 @@ class ValuePass extends ChangeNotifier {
 
   void sectorValuePass(String v) {
     sectorValue = v;
+  }
+}
+
+class SelectStudentPageBuilder extends ChangeNotifier {
+  bool builder = false;
+  String header = "";
+
+  void passValue(bool builderValue, String headerValue) {
+    builder = builderValue;
+    header = headerValue;
+  }
+}
+
+class FilterData extends ChangeNotifier {
+  List selectedStudents = [];
+}
+
+class MembersData extends ChangeNotifier {
+  List<Member> membersList = [];
+  List<String> departmentList = [];
+  List<String> roleList = [];
+  List<String> sectorList = [];
+  bool filterByDepartment = false;
+  bool filterBySector = false;
+  bool filterByRole = false;
+  bool depVisibile = false;
+  bool roleVisible = false;
+  bool secVisible = false;
+
+  Future<List<Member>> filterData(
+      String sector, String role, String department) async {
+    List<Member> result = [];
+    List<Member> swap = membersList;
+    if (filterByDepartment || filterByRole || filterBySector) {
+      Iterable<Member> filterd = [];
+      if (filterByDepartment && filterByRole && filterBySector) {
+        filterd = swap.where((element) =>
+            element.department == department &&
+            element.sector == sector &&
+            element.role == role);
+
+        result = filterd.toList();
+      } else if (filterByDepartment && filterByRole) {
+        filterd = swap.where((element) =>
+            element.department == department && element.role == role);
+
+        result = filterd.toList();
+      } else if (filterByDepartment && filterBySector) {
+        filterd = swap.where((element) =>
+            element.department == department && element.sector == sector);
+
+        result = filterd.toList();
+      } else if (filterByRole && filterBySector) {
+        filterd = swap.where(
+            (element) => element.role == role && element.sector == sector);
+
+        result = filterd.toList();
+      } else if (filterByDepartment) {
+        filterd = swap.where((element) => element.department == department);
+
+        result = filterd.toList();
+      } else if (filterByRole) {
+        filterd = swap.where((element) => element.role == role);
+
+        result = filterd.toList();
+      } else if (filterBySector) {
+        filterd = swap.where((element) => element.sector == sector);
+
+        result = filterd.toList();
+      }
+    } else {
+      result = membersList;
+    }
+    return result;
   }
 }
