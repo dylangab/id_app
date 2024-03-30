@@ -68,6 +68,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/stamp.jpg
     - assets/images/sign.jpg
+    - assets/images/id.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

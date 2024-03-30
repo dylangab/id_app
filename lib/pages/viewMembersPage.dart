@@ -4,13 +4,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/models/member.dart';
+import 'package:id_app/pages/studentPreidentHomePage.dart';
 
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 
 import 'package:id_app/pages/studentInfoPage.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class ViewMembersPage extends StatefulWidget {
   const ViewMembersPage({super.key});
@@ -41,7 +44,9 @@ TextEditingController _sectorController = TextEditingController();
 FocusNode _sectorNode = FocusNode();
 TextEditingController _departmentController = TextEditingController();
 FocusNode _department = FocusNode();
-List selectedStudent = [];
+List<Member> selectedStudent = [];
+RoundedLoadingButtonController _buttonController =
+    RoundedLoadingButtonController();
 
 class _ViewMembersPageState extends State<ViewMembersPage> {
   @override
@@ -719,24 +724,36 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                 padding: const EdgeInsets.only(left: 50, right: 50),
                 child: SizedBox(
                   height: 45,
-                  child: ElevatedButton(
+                  child: RoundedLoadingButton(
+                      color: Colors.yellow,
+                      valueColor: Colors.black,
+                      borderRadius: 10,
+                      height: 45,
+                      width: MediaQuery.of(context).size.width,
+                      controller: _buttonController,
                       onPressed: () async {
-                        print(demo);
-                        // await PdfApi().generateMultiPage().then((value) async =>
-                        //     PDFViewer(document: await PDFDocument.fromFile(value)));
+                        try {
+                          await PdfApi().generateMultiPage(selectedStudent);
+
+                          _buttonController.start();
+                          await Future.delayed(const Duration(seconds: 1));
+                          selectedStudent = [];
+                          _buttonController.stop();
+
+                          Get.to(() => const StudentPreidentHomePage());
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())));
+                          _buttonController.stop();
+                        }
                       },
-                      style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: Colors.yellow),
-                      child: Center(
-                          child: Text(
+                      child: Text(
                         "Generate IDs (${selectedStudent.length})",
                         style: const TextStyle(
                             fontSize: 15,
                             letterSpacing: 1.5 + 1,
                             color: Colors.black),
-                      ))),
+                      )),
                 ),
               ),
             ),
@@ -745,151 +762,4 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
       ),
     );
   }
-
-  // Widget studentListTile(
-  //     String? name, phoneNo, String photo, String id, List list, int x) {
-  //   return Consumer<SelectStudentPageBuilder>(
-  //     builder: (context, value, child) => Padding(
-  //       padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
-  //       child: Material(
-  //         elevation: 5,
-  //         shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(10), side: BorderSide.none),
-  //         child: ListTile(
-  //           tileColor: Colors.white,
-  //           shape: RoundedRectangleBorder(
-  //               borderRadius: BorderRadius.circular(10), side: BorderSide.none),
-  //           leading: CircleAvatar(
-  //             backgroundImage: NetworkImage(photo),
-  //           ),
-  //           title: Text("$name"),
-  //           subtitle: Text("$phoneNo"),
-  //           trailing: Visibility(
-  //               visible: value.builder,
-  //               maintainSize: false,
-  //               maintainState: false,
-  //               child: selectedStudent.contains(list[x])
-  //                   ? const Icon(
-  //                       Icons.check_circle,
-  //                       color: Colors.yellow,
-  //                     )
-  //                   : const Icon(
-  //                       Icons.check_circle_outline,
-  //                       color: Colors.grey,
-  //                     )),
-  //           onTap: () {
-  //             setState(() {
-  //               if (!selectedStudent.contains(list[x])) {
-  //                 selectedStudent.add(list[x]);
-  //               } else if (selectedStudent.contains(list[x])) {
-  //                 selectedStudent.removeWhere((element) => element == list[x]);
-  //               }
-  //             });
-  //           },
-  //           onLongPress: () {
-  //             Provider.of<studentInfoButtonBuilder>(listen: false, context)
-  //                 .passValue(id, false, "Generate ID");
-  //             Get.to(() => const StudentInfoPage());
-  //           },
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  Future<List> filterData(String sector, String role, String department) async {
-    List<Map<String, dynamic>> result = [];
-    if (filterByDepartment || filterByRole || filterBySector) {
-      if (filterByDepartment && filterByRole && filterBySector) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection("members")
-            .where("department", isEqualTo: department)
-            .where("role", isEqualTo: role)
-            .where("sector", isEqualTo: sector)
-            .get();
-        final documents = querySnapshot.docs;
-
-        // Extract data from each document
-        result = documents.map((doc) => doc.data()).toList();
-      } else if (filterByDepartment && filterByRole) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection("members")
-            .where("department", isEqualTo: department)
-            .where("role", isEqualTo: role)
-            .get();
-        final documents = querySnapshot.docs;
-
-        // Extract data from each document
-        result = documents.map((doc) => doc.data()).toList();
-      } else if (filterByDepartment && filterBySector) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection("members")
-            .where("department", isEqualTo: department)
-            .where("sector", isEqualTo: sector)
-            .get();
-        final documents = querySnapshot.docs;
-
-        // Extract data from each document
-        result = documents.map((doc) => doc.data()).toList();
-      } else if (filterByRole && filterBySector) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection("members")
-            .where("sector", isEqualTo: sector)
-            .where("role", isEqualTo: role)
-            .get();
-        final documents = querySnapshot.docs;
-
-        // Extract data from each document
-        result = documents.map((doc) => doc.data()).toList();
-      } else if (filterByDepartment) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection("members")
-            .where("department", isEqualTo: department)
-            .get();
-        final documents = querySnapshot.docs;
-
-        // Extract data from each document
-        result = documents.map((doc) => doc.data()).toList();
-      } else if (filterByRole) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection("members")
-            .where("role", isEqualTo: role)
-            .get();
-        final documents = querySnapshot.docs;
-
-        // Extract data from each document
-        result = documents.map((doc) => doc.data()).toList();
-      } else if (filterBySector) {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection("members")
-            .where("sector", isEqualTo: sector)
-            .get();
-        final documents = querySnapshot.docs;
-
-        // Extract data from each document
-        result = documents.map((doc) => doc.data()).toList();
-      }
-    } else {
-      final querySnapshot =
-          await FirebaseFirestore.instance.collection("members").get();
-      final documents = querySnapshot.docs;
-
-      // Extract data from each document
-      result = documents.map((doc) => doc.data()).toList();
-    }
-
-    return result;
-  }
-}
-
-// All Members
-
-class demo {
-  String? name, phoneNo;
-  bool? isselected;
-  demo({
-    required this.name,
-    required this.phoneNo,
-    required this.isselected,
-  });
 }

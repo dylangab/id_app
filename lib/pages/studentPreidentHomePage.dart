@@ -253,7 +253,9 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage> {
                                                                             .yellow),
                                                             onPressed:
                                                                 () async {
-                                                              var studentId;
+                                                              // PdfApi()
+                                                              //     .generateMultiPage();
+
                                                               Provider.of<studentInfoButtonBuilder>(
                                                                       listen:
                                                                           false,
