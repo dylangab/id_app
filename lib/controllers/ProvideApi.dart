@@ -125,6 +125,7 @@ class MembersData extends ChangeNotifier {
   Future<List<Member>> filterData(
       String sector, String role, String department) async {
     List<Member> result = [];
+
     List<Member> swap = membersList;
     if (filterByDepartment || filterByRole || filterBySector) {
       Iterable<Member> filterd = [];

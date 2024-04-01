@@ -7,6 +7,7 @@ import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/Utils/pdfvie.dart';
 import 'package:id_app/models/member.dart';
+import 'package:id_app/pages/QR_scanner.dart';
 import 'package:id_app/pages/createSectorAccountPage.dart';
 import 'package:id_app/pages/selectstudents.dart';
 import 'package:id_app/pages/studentInfoPage.dart';
@@ -546,7 +547,9 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage> {
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           3))),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Get.to(() => const QrPage());
+                                          },
                                           child: const Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,

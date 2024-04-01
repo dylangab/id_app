@@ -39,6 +39,7 @@ dependencies:
   firebase_storage: ^11.6.10
   flutter:
     sdk: flutter
+  flutter_barcode_scanner: ^2.0.0
   flutter_staggered_animations: ^1.1.1
   get: ^4.6.6
   iconsax: ^0.0.8
@@ -47,6 +48,7 @@ dependencies:
   pdf: ^3.10.8
   printing: ^5.12.0
   provider: ^6.1.2
+  qr_code_dart_scan: ^0.7.6
   rounded_loading_button_plus: ^3.0.1
   switcher_button: ^0.0.4
 
