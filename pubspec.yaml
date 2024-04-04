@@ -39,6 +39,7 @@ dependencies:
   firebase_storage: ^11.6.10
   flutter:
     sdk: flutter
+  flutter_animate: ^4.5.0
   flutter_barcode_scanner: ^2.0.0
   flutter_staggered_animations: ^1.1.1
   get: ^4.6.6

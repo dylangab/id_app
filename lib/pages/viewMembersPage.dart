@@ -595,15 +595,13 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
 
                                           // print(selectedStudent);
                                         },
-                                        // onLongPress: () {
-                                        //   Provider.of<studentInfoButtonBuilder>(
-                                        //           listen: false, context)
-                                        //       .passValue(
-                                        //           members[index]["studentId"],
-                                        //           false,
-                                        //           "Generate ID");
-                                        //   Get.to(() => const StudentInfoPage());
-                                        // },
+                                        onLongPress: () {
+                                          Provider.of<studentInfoButtonBuilder>(
+                                                  listen: false, context)
+                                              .passValue(
+                                                  index, false, "Generate ID");
+                                          Get.to(() => const StudentInfoPage());
+                                        },
                                       ),
                                     ),
                                   ),

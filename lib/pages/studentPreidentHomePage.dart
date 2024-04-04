@@ -13,7 +13,7 @@ import 'package:id_app/pages/selectstudents.dart';
 import 'package:id_app/pages/studentInfoPage.dart';
 import 'package:id_app/pages/viewMembersPage.dart';
 import 'package:provider/provider.dart';
-//import 'package:advance_pdf_viewer_fork/advance_pdf_viewer_fork.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/ProvideApi.dart';
 
 class StudentPreidentHomePage extends StatefulWidget {
@@ -24,6 +24,7 @@ class StudentPreidentHomePage extends StatefulWidget {
       _StudentPreidentHomePageState();
 }
 
+AnimationController? _controller;
 bool isAdd = true;
 TextEditingController sectorController = TextEditingController();
 FocusNode sectorNode = FocusNode();
@@ -34,7 +35,29 @@ FocusNode departmentNode = FocusNode();
 TextEditingController _searchController = TextEditingController();
 FocusNode _searchNode = FocusNode();
 
-class _StudentPreidentHomePageState extends State<StudentPreidentHomePage> {
+class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
+    with SingleTickerProviderStateMixin {
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+  }
+
+  @override
+  void dispose() {
+    _controller!.dispose();
+    _searchController.dispose();
+    _searchNode.dispose();
+    sectorController.dispose();
+    sectorNode.dispose();
+    roleController.dispose();
+    roleNode.dispose();
+    departmentController.dispose();
+    departmentNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,177 +201,211 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Material(
-                                    elevation: 5,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(3)),
-                                    child: SizedBox(
-                                      height: 150,
-                                      width: 150,
-                                      child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.white,
-                                              shape: BeveledRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          3))),
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10)),
-                                                  backgroundColor:
-                                                      const Color.fromARGB(
-                                                          255, 233, 236, 239),
-                                                  title: Center(
-                                                    child: Material(
-                                                      elevation: 5,
+                                Consumer<MembersData>(
+                                  builder: (context, data, child) => Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Material(
+                                      elevation: 5,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(3)),
+                                      child: SizedBox(
+                                        height: 150,
+                                        width: 150,
+                                        child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.white,
+                                                shape: BeveledRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            3))),
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return StatefulBuilder(
+                                                    builder:
+                                                        (context, setState) =>
+                                                            AlertDialog(
                                                       shape:
-                                                          const OutlineInputBorder(
-                                                              borderSide:
-                                                                  BorderSide
-                                                                      .none),
-                                                      child: TextField(
-                                                        controller:
-                                                            _searchController,
-                                                        focusNode: _searchNode,
-                                                        decoration: InputDecoration(
-                                                            hintText:
-                                                                "Enter the student ID",
-                                                            hintStyle:
-                                                                const TextStyle(
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10)),
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              233,
+                                                              236,
+                                                              239),
+                                                      title: Center(
+                                                        child: Material(
+                                                          elevation: 5,
+                                                          shape:
+                                                              const OutlineInputBorder(
+                                                                  borderSide:
+                                                                      BorderSide
+                                                                          .none),
+                                                          child: TextField(
+                                                            controller:
+                                                                _searchController,
+                                                            focusNode:
+                                                                _searchNode,
+                                                            decoration: InputDecoration(
+                                                                hintText:
+                                                                    "Enter the student ID",
+                                                                hintStyle: const TextStyle(
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w300),
-                                                            fillColor:
-                                                                Colors.white,
-                                                            border: OutlineInputBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
+                                                                fillColor:
+                                                                    Colors
+                                                                        .white,
+                                                                border: OutlineInputBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
                                                                             10),
-                                                                borderSide:
-                                                                    BorderSide
-                                                                        .none)),
+                                                                    borderSide:
+                                                                        BorderSide
+                                                                            .none)),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      content: SizedBox(
+                                                        height: 120,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            ElevatedButton(
+                                                                    style: ElevatedButton.styleFrom(
+                                                                        backgroundColor:
+                                                                            Colors
+                                                                                .yellow),
+                                                                    onPressed:
+                                                                        () async {
+                                                                      // PdfApi()
+                                                                      //     .generateMultiPage();
+                                                                      int index = await HelperFunctions().getIndexById(
+                                                                          data
+                                                                              .membersList,
+                                                                          _searchController
+                                                                              .value
+                                                                              .text);
+                                                                      if (index !=
+                                                                          -1) {
+                                                                        Provider.of<studentInfoButtonBuilder>(listen: false, context).passValue(
+                                                                            index,
+                                                                            true,
+                                                                            "Generate ID");
+                                                                        Get.to(() =>
+                                                                            const StudentInfoPage());
+                                                                      } else if (index ==
+                                                                          -1) {
+                                                                        setState(
+                                                                          () {
+                                                                            _controller!.reset();
+                                                                            _controller!.forward();
+                                                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Student doesn't exists")));
+                                                                          },
+                                                                        );
+                                                                      }
+                                                                    },
+                                                                    child: const Text(
+                                                                        "Generate ID",
+                                                                        style: TextStyle(
+                                                                            letterSpacing: 1.5 +
+                                                                                1,
+                                                                            color: Colors
+                                                                                .black)))
+                                                                .animate(
+                                                                    autoPlay:
+                                                                        false,
+                                                                    effects: const [
+                                                                      ShakeEffect(
+                                                                          duration:
+                                                                              Duration(seconds: 1))
+                                                                    ],
+                                                                    controller:
+                                                                        _controller),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            const Text("or"),
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            InkWell(
+                                                              onTap: () {
+                                                                Provider.of<SelectStudentPageBuilder>(
+                                                                        context,
+                                                                        listen:
+                                                                            false)
+                                                                    .passValue(
+                                                                        true,
+                                                                        "Select Members");
+                                                                Get.to(
+                                                                    () =>
+                                                                        const ViewMembersPage(),
+                                                                    transition:
+                                                                        Transition
+                                                                            .fadeIn);
+                                                              },
+                                                              child:
+                                                                  const SizedBox(
+                                                                height: 15,
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .center,
+                                                                  children: [
+                                                                    Text(
+                                                                        "Create multiple ID",
+                                                                        style: TextStyle(
+                                                                            decoration:
+                                                                                TextDecoration.underline,
+                                                                            fontWeight: FontWeight.w400)),
+                                                                    SizedBox(
+                                                                      height:
+                                                                          15,
+                                                                    ),
+                                                                    Icon(
+                                                                        Icons
+                                                                            .arrow_right_alt_sharp,
+                                                                        size:
+                                                                            18)
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            )
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                  content: SizedBox(
-                                                    height: 120,
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        ElevatedButton(
-                                                            style: ElevatedButton
-                                                                .styleFrom(
-                                                                    backgroundColor:
-                                                                        Colors
-                                                                            .yellow),
-                                                            onPressed:
-                                                                () async {
-                                                              // PdfApi()
-                                                              //     .generateMultiPage();
-
-                                                              Provider.of<studentInfoButtonBuilder>(
-                                                                      listen:
-                                                                          false,
-                                                                      context)
-                                                                  .passValue(
-                                                                      _searchController
-                                                                          .value
-                                                                          .text,
-                                                                      true,
-                                                                      "Generate ID");
-                                                              Get.to(() =>
-                                                                  const StudentInfoPage());
-                                                            },
-                                                            child: const Text(
-                                                                "Generate ID",
-                                                                style: TextStyle(
-                                                                    letterSpacing:
-                                                                        1.5 + 1,
-                                                                    color: Colors
-                                                                        .black))),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        const Text("or"),
-                                                        const SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            Provider.of<SelectStudentPageBuilder>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .passValue(true,
-                                                                    "Select Members");
-                                                            Get.to(
-                                                                () =>
-                                                                    const ViewMembersPage(),
-                                                                transition:
-                                                                    Transition
-                                                                        .fadeIn);
-                                                          },
-                                                          child: const SizedBox(
-                                                            height: 15,
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Text(
-                                                                    "Create multiple ID",
-                                                                    style: TextStyle(
-                                                                        decoration:
-                                                                            TextDecoration
-                                                                                .underline,
-                                                                        fontWeight:
-                                                                            FontWeight.w400)),
-                                                                SizedBox(
-                                                                  height: 15,
-                                                                ),
-                                                                Icon(
-                                                                    Icons
-                                                                        .arrow_right_alt_sharp,
-                                                                    size: 18)
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                          child: const Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.add,
-                                                size: 70,
-                                                color: Colors.black,
-                                              ),
-                                              Text("Generate ID",
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w300))
-                                            ],
-                                          )),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            child: const Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.add,
+                                                  size: 70,
+                                                  color: Colors.black,
+                                                ),
+                                                Text("Generate ID",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.w300))
+                                              ],
+                                            )),
+                                      ),
                                     ),
                                   ),
                                 ),

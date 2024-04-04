@@ -161,7 +161,7 @@ class HelperFunctions {
     return list;
   }
 
-  int getIndexById(List<Member> studentList, String id) {
+  Future<int> getIndexById(List<Member> studentList, String id) async {
     int result;
     for (var i = 0; i < studentList.length; i++) {
       if (studentList[i].studentId == id) {

@@ -17,12 +17,12 @@ class HeadingController extends ChangeNotifier {
 }
 
 class studentInfoButtonBuilder extends ChangeNotifier {
-  String? studentId;
+  int? studentId;
   bool isvisible = false;
   bool generate = false;
   String? buttonName = "";
 
-  void passValue(String? id, bool value, String name) {
+  void passValue(int? id, bool value, String name) {
     isvisible = true;
     generate = value;
     buttonName = name;

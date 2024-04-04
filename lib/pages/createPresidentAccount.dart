@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:id_app/Utils/helperFunctions.dart';
+import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/models/studentPreident.dart';
 import 'package:id_app/pages/loginPage.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class CreatePresidentAccount extends StatefulWidget {
@@ -112,6 +114,7 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
 
   @override
   Widget build(BuildContext context) {
+    final dropdownValues = Provider.of<MembersData>(context);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 233, 236, 239),
       body: ListView(
@@ -252,7 +255,7 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ),
-                            items: departments
+                            items: dropdownValues.departmentList
                                 .map((String item) => DropdownMenuItem<String>(
                                       value: item,
                                       child: Padding(
