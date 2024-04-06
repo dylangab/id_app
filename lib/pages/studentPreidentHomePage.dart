@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
@@ -61,23 +62,39 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 5),
+              child: IconButton(
+                  onPressed: () async {
+                    await signOut();
+                  },
+                  icon: const Icon(
+                    Icons.logout_rounded,
+                    size: 30,
+                  )),
+            )
+          ],
+          backgroundColor: const Color.fromARGB(255, 233, 236, 239),
+          elevation: 0,
+        ),
         backgroundColor: const Color.fromARGB(255, 233, 236, 239),
-        body: FutureBuilder(
-          future: initateData(),
+        body: StreamBuilder<bool>(
+          stream: initiateDataStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Container(
                 alignment: Alignment.center,
-                child: CircularProgressIndicator(
+                child: const CircularProgressIndicator(
                   color: Colors.yellow,
                 ),
               );
             } else if (snapshot.data == true) {
               return ListView(
-                // crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(
-                    height: 130,
+                    height: 10,
                   ),
                   const Padding(
                     padding: EdgeInsets.only(left: 10),
@@ -1140,7 +1157,7 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
       final snapshot = await collection.get();
 
       for (final doc in snapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>; // Cast to Map
+        final data = doc.data(); // Cast to Map
 
         final member = Member(
           lastName: data['fullName'] as String,
@@ -1163,26 +1180,42 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
     return memberList;
   }
 
-  Future<bool> initateData() async {
-    bool success = false;
+  Stream<bool> initiateDataStream() async* {
     try {
-      Provider.of<MembersData>(context, listen: false).membersList =
-          await fetchMemberData();
-
-      Provider.of<MembersData>(context, listen: false).departmentList =
-          await HelperFunctions().fetchCatagoires(
-              "catagories", "departments", "departments") as List<String>;
-      Provider.of<MembersData>(context, listen: false).roleList =
-          await HelperFunctions()
-              .fetchCatagoires("catagories", "roles", "roles") as List<String>;
-      Provider.of<MembersData>(context, listen: false).sectorList =
-          await HelperFunctions().fetchCatagoires(
-              "catagories", "sectors", "sectors") as List<String>;
-
-      success = true;
+      yield* Stream.fromFuture(fetchMemberData()).asyncMap((membersList) {
+        Provider.of<MembersData>(context, listen: false).membersList =
+            membersList;
+        return true; // Emit a "true" event for successful member data fetch
+      });
+      yield* Stream.fromFuture(HelperFunctions()
+              .fetchCatagoires("catagories", "departments", "departments"))
+          .asyncMap((department) {
+        Provider.of<MembersData>(context, listen: false).departmentList =
+            department as List<String>;
+        return true; // Emit a "true" event for successful member data fetch
+      });
+      yield* Stream.fromFuture(
+              HelperFunctions().fetchCatagoires("catagories", "roles", "roles"))
+          .asyncMap((role) {
+        Provider.of<MembersData>(context, listen: false).roleList =
+            role as List<String>;
+        return true; // Emit a "true" event for successful member data fetch
+      });
+      yield* Stream.fromFuture(HelperFunctions()
+              .fetchCatagoires("catagories", "sectors", "sectors"))
+          .asyncMap((sector) {
+        Provider.of<MembersData>(context, listen: false).sectorList =
+            sector as List<String>;
+        return true; // Emit a "true" event for successful member data fetch
+      });
     } catch (e) {
       print(e.toString());
+      yield false; // Emit a "false" event if any error occurs
     }
-    return success;
+  }
+
+  Future<void> signOut() async {
+    await FirebaseAuth.instance.signOut();
+    // Optionally navigate to login screen or handle state change
   }
 }

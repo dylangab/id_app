@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/models/member.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
-
+import 'package:gif_view/gif_view.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 
@@ -47,6 +47,8 @@ FocusNode _department = FocusNode();
 List<Member> selectedStudent = [];
 RoundedLoadingButtonController _buttonController =
     RoundedLoadingButtonController();
+bool A4Selected = true;
+bool scrollSelected = false;
 
 class _ViewMembersPageState extends State<ViewMembersPage> {
   @override
@@ -387,7 +389,7 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                               ),
                             ),
                           ))),
-                  SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   Visibility(
@@ -508,7 +510,6 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
               ],
             ),
           ),
-
           const SizedBox(
             height: 15,
           ),
@@ -616,143 +617,171 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                   }
                 },
               )),
-
-          // Container(
-          //     height: 500,
-          //     decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-          //     child: Consumer<ValuePass>(
-          //       builder: (context, value, child) => FutureBuilder(
-          //         future: filterData(
-          //             value.sectorValue, value.roleValue, value.departmentValue),
-          //         builder: (context, snapshot) {
-          //           if (snapshot.connectionState == ConnectionState.waiting) {
-          //             return Container(
-          //               alignment: Alignment.center,
-          //               child: const CircularProgressIndicator(
-          //                 color: Colors.yellow,
-          //               ),
-          //             );
-          //           }
-          //           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-          //             List? members = snapshot.data;
-          //             return Container(
-          //               child: AnimationConfiguration.staggeredList(
-          //                 position: 0,
-          //                 child: ScaleAnimation(
-          //                   child: FadeInAnimation(
-          //                     child: ListView.builder(
-          //                       itemCount: snapshot.data!.length,
-          //                       itemBuilder: (context, index) {
-          //                         return Consumer<SelectStudentPageBuilder>(
-          //                           builder: (context, value, child) => Padding(
-          //                             padding: const EdgeInsets.fromLTRB(
-          //                                 15, 20, 15, 0),
-          //                             child: Material(
-          //                               elevation: 5,
-          //                               shape: RoundedRectangleBorder(
-          //                                   borderRadius:
-          //                                       BorderRadius.circular(10),
-          //                                   side: BorderSide.none),
-          //                               child: ListTile(
-          //                                 tileColor: Colors.white,
-          //                                 shape: RoundedRectangleBorder(
-          //                                     borderRadius:
-          //                                         BorderRadius.circular(10),
-          //                                     side: BorderSide.none),
-          //                                 leading: CircleAvatar(
-          //                                   backgroundImage: NetworkImage(
-          //                                       members![index]["studentPhoto"]),
-          //                                 ),
-          //                                 title: Text(
-          //                                     "${members[index]["fullName"]}"),
-          //                                 subtitle: Text(
-          //                                     "${members[index]["studentId"]}"),
-          //                                 trailing: Visibility(
-          //                                     visible: value.builder,
-          //                                     maintainSize: false,
-          //                                     maintainState: false,
-          //                                     child: selectedStudent
-          //                                             .contains(members[index])
-          //                                         ? const Icon(
-          //                                             Icons.check_circle,
-          //                                             color: Colors.yellow,
-          //                                           )
-          //                                         : const Icon(
-          //                                             Icons.check_circle_outline,
-          //                                             color: Colors.grey,
-          //                                           )),
-          //                                 onTap: () {
-          //                                   handleSelection(members[index]);
-          //                                   print(selectedStudent);
-          //                                 },
-          //                                 onLongPress: () {
-          //                                   Provider.of<studentInfoButtonBuilder>(
-          //                                           listen: false, context)
-          //                                       .passValue(
-          //                                           members[index]["studentId"],
-          //                                           false,
-          //                                           "Generate ID");
-          //                                   Get.to(() => const StudentInfoPage());
-          //                                 },
-          //                               ),
-          //                             ),
-          //                           ),
-          //                         );
-          //                       },
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ),
-          //             );
-          //           } else {
-          //             return const SizedBox(
-          //               child: Center(child: Text("No members")),
-          //             );
-          //           }
-          //         },
-          //       ),
-          //     )),
           const SizedBox(
             height: 15,
           ),
           Consumer<SelectStudentPageBuilder>(
             builder: (context, value, child) => Visibility(
               visible: value.builder,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 50, right: 50),
-                child: SizedBox(
-                  height: 45,
-                  child: RoundedLoadingButton(
-                      color: Colors.yellow,
-                      valueColor: Colors.black,
-                      borderRadius: 10,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15, right: 15),
+                    child: Material(
+                      color: Colors.white,
+                      elevation: 5,
+                      shape:
+                          const OutlineInputBorder(borderSide: BorderSide.none),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 300,
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Text(
+                              "Choose print layout",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  letterSpacing: 1.5 + 1,
+                                  color: Colors.black),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(width: 1.5)),
+                                  child: const Image(
+                                    image: AssetImage('assets/gif/A4.gif'),
+                                    width: 150,
+                                    height: 200,
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                                const Image(
+                                  image: AssetImage('assets/gif/scroll.gif'),
+                                  width: 150,
+                                  height: 200,
+                                  fit: BoxFit.contain,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        if (!scrollSelected) {
+                                          A4Selected = !A4Selected;
+                                        } else if (scrollSelected) {
+                                          scrollSelected = false;
+                                          A4Selected = !A4Selected;
+                                        }
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.check_circle,
+                                      color: A4Selected
+                                          ? Colors.yellow
+                                          : Colors.grey,
+                                    )),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        if (!A4Selected) {
+                                          scrollSelected = !scrollSelected;
+                                        } else if (A4Selected) {
+                                          A4Selected = false;
+                                          scrollSelected = !scrollSelected;
+                                        }
+                                      });
+                                    },
+                                    icon: Icon(
+                                      Icons.check_circle,
+                                      color: scrollSelected
+                                          ? Colors.yellow
+                                          : Colors.grey,
+                                    ))
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 50, right: 50, bottom: 30),
+                    child: SizedBox(
                       height: 45,
-                      width: MediaQuery.of(context).size.width,
-                      controller: _buttonController,
-                      onPressed: () async {
-                        try {
-                          await PdfApi().generateMultiPage(selectedStudent);
+                      child: RoundedLoadingButton(
+                          color: Colors.yellow,
+                          valueColor: Colors.black,
+                          borderRadius: 10,
+                          height: 45,
+                          width: MediaQuery.of(context).size.width,
+                          controller: _buttonController,
+                          onPressed: () async {
+                            if (A4Selected) {
+                              try {
+                                await PdfApi()
+                                    .generateMultiPage(selectedStudent);
 
-                          _buttonController.start();
-                          await Future.delayed(const Duration(seconds: 1));
-                          selectedStudent = [];
-                          _buttonController.stop();
+                                _buttonController.start();
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+                                selectedStudent = [];
+                                _buttonController.stop();
 
-                          Get.to(() => const StudentPreidentHomePage());
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString())));
-                          _buttonController.stop();
-                        }
-                      },
-                      child: Text(
-                        "Generate IDs (${selectedStudent.length})",
-                        style: const TextStyle(
-                            fontSize: 15,
-                            letterSpacing: 1.5 + 1,
-                            color: Colors.black),
-                      )),
-                ),
+                                Get.to(() => const StudentPreidentHomePage());
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(e.toString())));
+                                _buttonController.stop();
+                              }
+                            } else if (scrollSelected) {
+                              try {
+                                await PdfApi().generateMultiId(selectedStudent);
+
+                                _buttonController.start();
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+                                selectedStudent = [];
+                                _buttonController.stop();
+
+                                Get.to(() => const StudentPreidentHomePage());
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(e.toString())));
+                                _buttonController.stop();
+                              }
+                            } else if (!A4Selected && !scrollSelected) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text("Please choose Print layout")));
+                              _buttonController.stop();
+                            }
+                          },
+                          child: Text(
+                            "Generate IDs (${selectedStudent.length})",
+                            style: const TextStyle(
+                                fontSize: 15,
+                                letterSpacing: 1.5 + 1,
+                                color: Colors.black),
+                          )),
+                    ),
+                  ),
+                ],
               ),
             ),
           )

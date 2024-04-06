@@ -43,6 +43,7 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   flutter_staggered_animations: ^1.1.1
   get: ^4.6.6
+  gif_view: ^0.4.3
   iconsax: ^0.0.8
   image_picker: ^1.0.7
   path_provider: ^2.1.2
@@ -72,6 +73,8 @@ flutter:
     - assets/images/stamp.jpg
     - assets/images/sign.jpg
     - assets/images/id.jpg
+    - assets/gif/A4.gif
+    - assets/gif/scroll.gif
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
