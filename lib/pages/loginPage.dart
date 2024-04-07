@@ -20,15 +20,15 @@ RoundedLoadingButtonController _buttonController =
     RoundedLoadingButtonController();
 
 class _LoginPageState extends State<LoginPage> {
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _emailNode.dispose();
-    _passwordController.dispose();
-    _passwordNode.dispose();
+  // @override
+  // void dispose() {
+  //   _emailController.dispose();
+  //   _emailNode.dispose();
+  //   _passwordController.dispose();
+  //   _passwordNode.dispose();
 
-    super.dispose();
-  }
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:id_app/Utils/helperFunctions.dart';
+import 'package:id_app/controllers/ProvideApi.dart';
+import 'package:id_app/models/member.dart';
+import 'package:id_app/pages/studentInfoPage.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
 
 class QrPage extends StatefulWidget {
@@ -10,6 +16,7 @@ class QrPage extends StatefulWidget {
 
 class QrPageState extends State<QrPage> {
   Result? currentResult;
+  int? output = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +24,19 @@ class QrPageState extends State<QrPage> {
       body: QRCodeDartScanView(
         typeScan: TypeScan.live,
         scanInvertedQRCode: true,
-        onCapture: (Result result) {
+        onCapture: (Result result) async {
+          List<Member> list =
+              Provider.of<MembersData>(context, listen: false).membersList;
           setState(() {
             currentResult = result;
           });
+          output =
+              await HelperFunctions().getIndexById(list, currentResult!.text);
+          if (output == 1) {
+            Provider.of<studentInfoButtonBuilder>(listen: false, context)
+                .passValue(output, false, "Generate ID");
+            Get.to(() => const StudentInfoPage());
+          }
         },
         child: Align(
           alignment: Alignment.bottomCenter,
@@ -35,8 +51,10 @@ class QrPageState extends State<QrPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Text: ${currentResult?.text ?? 'Not found'}'),
-                Text('Format: ${currentResult?.barcodeFormat ?? 'Not found'}'),
+                output == -1
+                    ? Text('Text: ${currentResult?.text} ID does not exist')
+                    : const Text("Scan ID"),
+                //   Text('Format: ${currentResult?.barcodeFormat ?? 'Not found'}'),
               ],
             ),
           ),

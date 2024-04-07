@@ -45,19 +45,19 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
   }
 
-  @override
-  void dispose() {
-    _controller!.dispose();
-    _searchController.dispose();
-    _searchNode.dispose();
-    sectorController.dispose();
-    sectorNode.dispose();
-    roleController.dispose();
-    roleNode.dispose();
-    departmentController.dispose();
-    departmentNode.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _controller!.dispose();
+  //   _searchController.dispose();
+  //   _searchNode.dispose();
+  //   sectorController.dispose();
+  //   sectorNode.dispose();
+  //   roleController.dispose();
+  //   roleNode.dispose();
+  //   departmentController.dispose();
+  //   departmentNode.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +69,7 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
               child: IconButton(
                   onPressed: () async {
                     await signOut();
+                    Get.back();
                   },
                   icon: const Icon(
                     Icons.logout_rounded,
