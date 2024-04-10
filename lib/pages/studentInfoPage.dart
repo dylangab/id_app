@@ -233,7 +233,7 @@ class _StudentInfoPageState extends State<StudentInfoPage> {
           height: 15,
         ),
         Visibility(
-          visible: buttonBuilder.isvisible,
+          visible: buttonBuilder.generate,
           maintainState: true,
           child: Padding(
             padding: const EdgeInsets.only(left: 50, right: 50),

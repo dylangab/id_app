@@ -170,4 +170,27 @@ class HelperFunctions {
     }
     return -1;
   }
+
+  Future<List> firebaseService(
+      String docName, String collection, String field) async {
+    List list = [];
+    try {
+      final DocumentReference reference =
+          FirebaseFirestore.instance.collection(collection).doc(docName);
+      late Stream<DocumentSnapshot> stream;
+      late DocumentSnapshot documentSnapshot;
+
+      reference.get().then((value) => documentSnapshot = value);
+
+      stream = reference.snapshots();
+      stream.listen((event) {
+        documentSnapshot = event;
+        list = (documentSnapshot.get(field) as List<dynamic>).cast<String>();
+      });
+      return list;
+    } catch (e) {
+      print(e.toString());
+    }
+    return list;
+  }
 }

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
-import 'package:id_app/pages/createPresidentAccount.dart';
-import 'package:id_app/pages/createSectorAccountPage.dart';
+import 'package:id_app/models/studentPreident.dart';
+import 'package:id_app/pages/Id_error_page.dart';
+import 'package:id_app/pages/President%20Account/createPresidentAccount.dart';
+import 'package:id_app/pages/President%20Account/view_account.dart';
 import 'package:id_app/pages/loginPage.dart';
-import 'package:id_app/pages/selectstudents.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
-import 'package:id_app/pages/viewMembersPage.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
@@ -20,6 +20,8 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+            create: (context) => StudentPresidentDataFetch()),
         ChangeNotifierProvider(create: (context) => MembersData()),
         ChangeNotifierProvider(create: (context) => FilterData()),
         ChangeNotifierProvider(create: (context) => SelectStudentPageBuilder()),
@@ -38,7 +40,7 @@ Future<void> main() async {
           create: (context) => CreateAccountButtonBuilder(),
         )
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -56,6 +58,8 @@ Future<void> main() async {
 // }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     final FirebaseAuth auth = FirebaseAuth.instance;

@@ -12,11 +12,12 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
-class CreatePresidentAccount extends StatefulWidget {
-  const CreatePresidentAccount({super.key});
+class CreatePresidentAccountPage extends StatefulWidget {
+  const CreatePresidentAccountPage({super.key});
 
   @override
-  State<CreatePresidentAccount> createState() => _CreatePresidentAccountState();
+  State<CreatePresidentAccountPage> createState() =>
+      _CreatePresidentAccountPageState();
 }
 
 final _formkey = GlobalKey<FormState>();
@@ -34,6 +35,8 @@ XFile? signiture;
 XFile? stamp;
 FocusNode _maleRadioButton = FocusNode();
 FocusNode _femaleRadioButton = FocusNode();
+TextEditingController _secretKey = TextEditingController();
+FocusNode _secretKeyNode = FocusNode();
 TextEditingController _emailController = TextEditingController();
 FocusNode _emailNode = FocusNode();
 TextEditingController _passwordController = TextEditingController();
@@ -59,7 +62,7 @@ bool signisUploaded = false;
 bool stampisLoading = false;
 bool stampisUploaded = false;
 
-class _CreatePresidentAccountState extends State<CreatePresidentAccount>
+class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
     with TickerProviderStateMixin {
   @override
   void initState() {
@@ -249,10 +252,10 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                           child: DropdownButton2(
                             focusNode: _department,
                             hint: const Padding(
-                              padding: const EdgeInsets.only(left: 10),
+                              padding: EdgeInsets.only(left: 10),
                               child: Text(
                                 "Choose your department",
-                                style: const TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ),
                             items: dropdownValues.departmentList
@@ -448,8 +451,17 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                           onTap: () async {
                             try {
                               ImagePicker imagePicker = ImagePicker();
-                              studentPic = await imagePicker.pickImage(
+                              XFile? pickedFile = await imagePicker.pickImage(
                                   source: ImageSource.gallery);
+                              if (pickedFile != null) {
+                                setState(() {
+                                  studentPic = pickedFile;
+                                  // Handle image upload or display logic here
+                                });
+                              } else {
+                                // User cancelled image selection
+                                print('User cancelled image selection');
+                              }
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text(e.toString())));
@@ -498,7 +510,8 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                                         : AnimatedContainer(
                                             duration:
                                                 const Duration(seconds: 1),
-                                            child: studisUploaded
+                                            child: studisUploaded &&
+                                                    studentPic != null
                                                 ? Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -583,7 +596,7 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                             ),
                           ),
                         )),
-                    SizedBox(
+                    const SizedBox(
                       height: 30,
                     ),
                     Padding(
@@ -642,7 +655,8 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                                         : AnimatedContainer(
                                             duration:
                                                 const Duration(seconds: 1),
-                                            child: signisUploaded
+                                            child: signisUploaded &&
+                                                    signiture != null
                                                 ? Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -786,7 +800,8 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                                         : AnimatedContainer(
                                             duration:
                                                 const Duration(seconds: 1),
-                                            child: stampisUploaded
+                                            child: stampisUploaded &&
+                                                    stamp != null
                                                 ? Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment
@@ -996,6 +1011,32 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                       height: 30,
                     ),
                     Padding(
+                      padding: const EdgeInsets.only(left: 15, right: 15),
+                      child: Material(
+                        elevation: 5,
+                        shape: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: TextFormField(
+                          controller: _secretKey,
+                          focusNode: _secretKeyNode,
+                          decoration: const InputDecoration(
+                              hintText: "Enter secret key",
+                              helperStyle:
+                                  TextStyle(fontWeight: FontWeight.w100),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)))),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Padding(
                         padding: const EdgeInsets.fromLTRB(50, 0, 50, 10),
                         child: RoundedLoadingButton(
                             valueColor: Colors.black,
@@ -1007,6 +1048,7 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                             borderRadius: 10,
                             controller: _btnController,
                             onPressed: () async {
+                              String key = SecretKey().key;
                               if (studentPic == null ??
                                   stamp == null ??
                                   signiture == null) {
@@ -1014,12 +1056,20 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                                     .showSnackBar(const SnackBar(
                                   content: Text("please upload your photo"),
                                 ));
+                                _btnController.stop();
+                              } else if (_secretKey.value.text.trim() != key) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("secret key not correct"),
+                                ));
+                                _btnController.stop();
                               } else if (departmentValue == null) {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(const SnackBar(
                                   content:
                                       Text("please insert your department"),
                                 ));
+                                _btnController.stop();
                               } else if (_formkey.currentState!.validate()) {
                                 String studentPicUrl = await HelperFunctions()
                                     .uploadImage(studentPic, "student_picture");
@@ -1027,31 +1077,25 @@ class _CreatePresidentAccountState extends State<CreatePresidentAccount>
                                     .uploadImage(signiture, "signiture");
                                 String stampPicUrl = await HelperFunctions()
                                     .uploadImage(stamp, "stamp");
-                                StudentPreident studentPreident =
-                                    StudentPreident(
-                                        email: _emailController.value.text,
-                                        signature: signiturePicUrl,
-                                        password:
-                                            _passwordController.value.text,
-                                        stamp: stampPicUrl,
-                                        firstName:
-                                            _firstNameController.value.text,
-                                        lastName:
-                                            _lastNameController.value.text,
-                                        department: departmentValue,
-                                        studentId:
-                                            _studentIdController.value.text,
-                                        role: "",
-                                        gender: gender,
-                                        sector: "",
-                                        studentPhoto: studentPicUrl);
+                                StudentPreident studentPreident = StudentPreident(
+                                    email: _emailController.value.text,
+                                    signature: signiturePicUrl,
+                                    password: _passwordController.value.text,
+                                    stamp: stampPicUrl,
+                                    fullName:
+                                        "${_firstNameController.value.text} ${_lastNameController.value.text}",
+                                    department: departmentValue,
+                                    studentId: _studentIdController.value.text,
+                                    gender: gender,
+                                    studentPhoto: studentPicUrl);
 
                                 await CreateStudentPresidentAccount()
                                     .createAccount(studentPreident);
+                                _btnController.success();
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+                                Get.to(() => const LoginPage());
                               }
-                              _btnController.success();
-                              await Future.delayed(const Duration(seconds: 1));
-                              Get.to(() => const LoginPage());
                             },
                             child: const Text(
                               "Create Account",

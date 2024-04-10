@@ -8,6 +8,8 @@ import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/Utils/pdfvie.dart';
 import 'package:id_app/models/member.dart';
+import 'package:id_app/pages/President%20Account/createPresidentAccount.dart';
+import 'package:id_app/pages/President%20Account/view_account.dart';
 import 'package:id_app/pages/QR_scanner.dart';
 import 'package:id_app/pages/createSectorAccountPage.dart';
 import 'package:id_app/pages/selectstudents.dart';
@@ -58,11 +60,46 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
   //   departmentNode.dispose();
   //   super.dispose();
   // }
+  // Stream<DocumentSnapshot> getDocumentSnapshotStream(
+  //     String collectionPath, String documentId, String field) {
+  //   final DocumentReference reference =
+  //       FirebaseFirestore.instance.collection(collectionPath).doc(documentId);
+  //   return reference.snapshots();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    // Stream<DocumentSnapshot> userStream =
+    //     getDocumentSnapshotStream("catagories", "roles", "roles");
+
+    // userStream.listen((snapshot) {
+    //   if (snapshot.exists) {
+    //     List<String> list;
+    //     list = snapshot.get('roles');
+    //     Provider.of<MembersData>(context, listen: false).roleList = list;
+    //   } else {
+    //     print("Document does not exist!");
+    //   }
+    // });
+
     return Scaffold(
         appBar: AppBar(
+          leading: GestureDetector(
+            onLongPress: () {
+              Get.to(() => const CreatePresidentAccountPage());
+            },
+            onTap: () {
+              Get.to(() => const ViewAccount());
+            },
+            child: const Padding(
+              padding: EdgeInsets.only(left: 15),
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(
+                    "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg"),
+                radius: 20,
+              ),
+            ),
+          ),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 5),
@@ -81,8 +118,8 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
           elevation: 0,
         ),
         backgroundColor: const Color.fromARGB(255, 233, 236, 239),
-        body: StreamBuilder<bool>(
-          stream: initiateDataStream(),
+        body: FutureBuilder(
+          future: initateData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Container(
@@ -190,7 +227,7 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           3))),
-                                          onPressed: () {
+                                          onPressed: () async {
                                             Provider.of<SelectStudentPageBuilder>(
                                                     context,
                                                     listen: false)
@@ -729,19 +766,29 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                             List
                                                                                 sectorList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "sectors", "sectors");
-                                                                            sectorList.add(sectorController.value.text);
+                                                                            sectorList.add(sectorController.value.text.toUpperCase().trim());
 
                                                                             await FirebaseFirestore.instance.collection("catagories").doc("sectors").set({
                                                                               "sectors": sectorList
+                                                                            }).then((value) {
+                                                                              Provider.of<MembersData>(context, listen: false).initateData();
+                                                                            }).then((value) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
+                                                                              Get.back();
                                                                             });
                                                                           } else {
                                                                             List
                                                                                 sectorList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "sectors", "sectors");
-                                                                            sectorList.remove(sectorController.value.text);
+                                                                            sectorList.remove(sectorController.value.text.toUpperCase().trim());
 
                                                                             await FirebaseFirestore.instance.collection("catagories").doc("sectors").set({
                                                                               "sectors": sectorList
+                                                                            }).then((value) {
+                                                                              Provider.of<MembersData>(context, listen: false).initateData();
+                                                                            }).then((value) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Removed")));
+                                                                              Get.back();
                                                                             });
                                                                           }
                                                                         },
@@ -771,13 +818,15 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                         });
                                                                       },
                                                                       child:
-                                                                          const SizedBox(
+                                                                          SizedBox(
                                                                         height:
                                                                             20,
                                                                         child: Text(
-                                                                            "Remove Sector",
+                                                                            isAdd
+                                                                                ? "Remove Sector"
+                                                                                : "Add sector",
                                                                             style:
-                                                                                TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w400)),
+                                                                                const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w400)),
                                                                       ),
                                                                     )
                                                                   ],
@@ -892,20 +941,32 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                             List
                                                                                 roleList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "roles", "roles");
-                                                                            roleList.add(roleController.value.text);
+                                                                            roleList.add(roleController.value.text.toUpperCase().trim());
 
                                                                             await FirebaseFirestore.instance.collection("catagories").doc("roles").set({
                                                                               "roles": roleList
+                                                                            }).then((value) {
+                                                                              Provider.of<MembersData>(context, listen: false).initateData();
+                                                                            }).then((value) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
+                                                                              Get.back();
                                                                             });
+                                                                            //       initiateDataStream();
                                                                           } else {
                                                                             List
                                                                                 roleList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "roles", "roles");
-                                                                            roleList.remove(roleController.value.text);
+                                                                            roleList.remove(roleController.value.text.toUpperCase().trim());
 
                                                                             await FirebaseFirestore.instance.collection("catagories").doc("roles").set({
                                                                               "roles": roleList
+                                                                            }).then((value) {
+                                                                              Provider.of<MembersData>(context, listen: false).initateData();
+                                                                            }).then((value) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully removed")));
+                                                                              Get.back();
                                                                             });
+                                                                            //      initiateDataStream();
                                                                           }
                                                                         },
                                                                         child: Text(
@@ -934,11 +995,13 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                         });
                                                                       },
                                                                       child:
-                                                                          const SizedBox(
+                                                                          SizedBox(
                                                                         height:
                                                                             20,
                                                                         child: Text(
-                                                                            "Remove role",
+                                                                            isAdd
+                                                                                ? "Remove role"
+                                                                                : "Add role",
                                                                             style:
                                                                                 TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w400)),
                                                                       ),
@@ -1054,20 +1117,30 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                           if (isAdd) {
                                                                             List
                                                                                 depatmentsList =
-                                                                                await HelperFunctions().fetchCatagoires("catagories", "depatments", "depatments");
-                                                                            depatmentsList.add(departmentController.value.text);
+                                                                                await HelperFunctions().fetchCatagoires("catagories", "departments", "departments");
+                                                                            depatmentsList.add(departmentController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("depatments").set({
-                                                                              "depatments": depatmentsList
+                                                                            await FirebaseFirestore.instance.collection("catagories").doc("departments").set({
+                                                                              "departments": depatmentsList
+                                                                            }).then((value) {
+                                                                              Provider.of<MembersData>(context, listen: false).initateData();
+                                                                            }).then((value) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
+                                                                              Get.back();
                                                                             });
                                                                           } else {
                                                                             List
                                                                                 roleList =
-                                                                                await HelperFunctions().fetchCatagoires("catagories", "depatments", "depatments");
-                                                                            roleList.remove(departmentController.value.text);
+                                                                                await HelperFunctions().fetchCatagoires("catagories", "departments", "departments");
+                                                                            roleList.remove(departmentController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("depatments").set({
-                                                                              "depatments": roleList
+                                                                            await FirebaseFirestore.instance.collection("catagories").doc("departments").set({
+                                                                              "departments": roleList
+                                                                            }).then((value) {
+                                                                              Provider.of<MembersData>(context, listen: false).initateData();
+                                                                            }).then((value) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully removed")));
+                                                                              Get.back();
                                                                             });
                                                                           }
                                                                         },
@@ -1097,13 +1170,15 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                         });
                                                                       },
                                                                       child:
-                                                                          const SizedBox(
+                                                                          SizedBox(
                                                                         height:
                                                                             20,
                                                                         child: Text(
-                                                                            "Remove department",
+                                                                            isAdd
+                                                                                ? "Remove department"
+                                                                                : "Add department",
                                                                             style:
-                                                                                TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w400)),
+                                                                                const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w400)),
                                                                       ),
                                                                     )
                                                                   ],
@@ -1143,8 +1218,9 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
               );
             } else {
               return Container(
-                  alignment: Alignment.center,
-                  child: const Text("something went wrong"));
+                alignment: Alignment.center,
+                child: const Text("something went wrong"),
+              );
             }
           },
         ));
@@ -1181,39 +1257,63 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
     return memberList;
   }
 
-  Stream<bool> initiateDataStream() async* {
+  Future<bool> initateData() async {
+    bool success = false;
     try {
-      yield* Stream.fromFuture(fetchMemberData()).asyncMap((membersList) {
-        Provider.of<MembersData>(context, listen: false).membersList =
-            membersList;
-        return true; // Emit a "true" event for successful member data fetch
-      });
-      yield* Stream.fromFuture(HelperFunctions()
-              .fetchCatagoires("catagories", "departments", "departments"))
-          .asyncMap((department) {
-        Provider.of<MembersData>(context, listen: false).departmentList =
-            department as List<String>;
-        return true; // Emit a "true" event for successful member data fetch
-      });
-      yield* Stream.fromFuture(
-              HelperFunctions().fetchCatagoires("catagories", "roles", "roles"))
-          .asyncMap((role) {
-        Provider.of<MembersData>(context, listen: false).roleList =
-            role as List<String>;
-        return true; // Emit a "true" event for successful member data fetch
-      });
-      yield* Stream.fromFuture(HelperFunctions()
-              .fetchCatagoires("catagories", "sectors", "sectors"))
-          .asyncMap((sector) {
-        Provider.of<MembersData>(context, listen: false).sectorList =
-            sector as List<String>;
-        return true; // Emit a "true" event for successful member data fetch
-      });
+      Provider.of<MembersData>(context, listen: false).membersList =
+          await fetchMemberData();
+
+      Provider.of<MembersData>(context, listen: false).departmentList =
+          await HelperFunctions().fetchCatagoires(
+              "catagories", "departments", "departments") as List<String>;
+      Provider.of<MembersData>(context, listen: false).roleList =
+          await HelperFunctions()
+              .fetchCatagoires("catagories", "roles", "roles") as List<String>;
+      Provider.of<MembersData>(context, listen: false).sectorList =
+          await HelperFunctions().fetchCatagoires(
+              "catagories", "sectors", "sectors") as List<String>;
+
+      success = true;
     } catch (e) {
       print(e.toString());
-      yield false; // Emit a "false" event if any error occurs
     }
+    return success;
   }
+
+  // Stream<bool> initiateDataStream() async* {
+  //   try {
+  //     yield* Stream.fromFuture(fetchMemberData()).asyncMap((membersList) {
+  //       Provider.of<MembersData>(context, listen: false).membersList =
+  //           membersList;
+  //       return true; // Emit a "true" event for successful member data fetch
+  //     });
+  //     yield* Stream.fromFuture(HelperFunctions()
+  //             .fetchCatagoires("catagories", "departments", "departments"))
+  //         .asyncMap((department) {
+  //       Provider.of<MembersData>(context, listen: false).departmentList =
+  //           department as List<String>;
+  //       return true; // Emit a "true" event for successful member data fetch
+  //     });
+
+  //     yield* Stream.fromFuture(
+  //             HelperFunctions().fetchCatagoires("catagories", "roles", "roles"))
+  //         .asyncMap((role) {
+  //       Provider.of<MembersData>(context, listen: false).roleList =
+  //           role as List<String>;
+  //       return true; // Emit a "true" event for successful member data fetch
+  //     });
+  //     yield* Stream.fromFuture(HelperFunctions()
+  //             .fetchCatagoires("catagories", "sectors", "sectors"))
+  //         .asyncMap((sector) {
+  //       Provider.of<MembersData>(context, listen: false).sectorList =
+  //           sector as List<String>;
+  //       return true; // Emit a "true" event for successful member data fetch
+  //     });
+  //   } catch (e) {
+  //     print(e.toString());
+  //     yield false; // Emit a "false" event if any error occurs
+  //   }
+  // }
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();

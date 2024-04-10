@@ -123,6 +123,7 @@ class PdfApi {
               SizedBox(height: 3),
               Container(
                   height: 10,
+                  color: PdfColor.fromHex("#06304b"),
                   decoration: BoxDecoration(color: PdfColor.fromHex("#06304b")),
                   child: Center(
                       child: Text("${member.sector!} SECTOR",
@@ -174,7 +175,11 @@ class PdfApi {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Column(children: [
-                          Image(MemoryImage(sign), height: 200, width: 50),
+                          SizedBox(
+                            height: 200,
+                            width: 50,
+                            child: Image(MemoryImage(sign), fit: BoxFit.fill),
+                          ),
                           Text("Tarea Sisay",
                               style: TextStyle(
                                 fontSize: 5,
@@ -194,7 +199,10 @@ class PdfApi {
                                 color: PdfColor.fromHex("#562e61"),
                               ))
                         ]),
-                        Image(MemoryImage(stamp), height: 70, width: 100)
+                        SizedBox(
+                            height: 70,
+                            width: 100,
+                            child: Image(MemoryImage(stamp), fit: BoxFit.fill))
                       ])),
               SizedBox(height: 3),
               Center(
@@ -497,7 +505,7 @@ class PdfApi {
                           ])),
                       SizedBox(height: 5),
                       SizedBox(
-                          height: 120,
+                          height: 100,
                           width: 100,
                           child: Image(fit: BoxFit.fill, img)),
                       SizedBox(height: 10),
@@ -528,9 +536,8 @@ class PdfApi {
                           ])),
                       SizedBox(height: 3),
                       Container(
+                          color: PdfColor.fromHex("#06304b"),
                           height: 10,
-                          decoration:
-                              BoxDecoration(color: PdfColor.fromHex("#06304b")),
                           child: Center(
                               child: Text("${element.sector!} SECTOR",
                                   style: TextStyle(
@@ -544,7 +551,7 @@ class PdfApi {
                 height: PdfPageFormat.inch * 3.137,
                 width: PdfPageFormat.inch * 2.125,
                 child: Column(children: [
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Padding(
                       padding: const EdgeInsets.only(left: 20, right: 20),
                       child: Row(
@@ -628,7 +635,7 @@ class PdfApi {
                         style: const TextStyle(fontSize: 5))
                   ])),
                   SizedBox(height: 5),
-                  Container(color: PdfColor.fromHex("#06304b"), height: 40.5)
+                  Container(color: PdfColor.fromHex("#06304b"), height: 32)
                 ])),
           ]),
           SizedBox(height: 10)

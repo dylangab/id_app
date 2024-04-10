@@ -1,16 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:id_app/Utils/Widgets/dropdownButton.dart';
 import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/models/member.dart';
+import 'package:id_app/pages/viewMembersPage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
@@ -70,6 +68,7 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
     with TickerProviderStateMixin {
   @override
   void initState() {
+    _makeNull();
     fetchdata();
     super.initState();
     _animationController =
@@ -113,6 +112,16 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
     Timer(Duration(seconds: 3), () {
       _btnController.success();
     });
+  }
+
+  void _makeNull() {
+    if (departmentValue != null) {
+      departmentValue = null;
+    } else if (sectorValue != null) {
+      sectorValue = null;
+    } else if (RoleValue != null) {
+      roleValue = null;
+    }
   }
 
   @override
@@ -917,7 +926,11 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                             _studentIdController.value.text,
                                         studentPhoto: imageUrl);
                                     await CreateMemberAccount()
-                                        .createMemeberAccount(member);
+                                        .createMemeberAccount(member)
+                                        .then((value) {
+                                      Provider.of<MembersData>(context)
+                                          .initateData();
+                                    });
                                   }
                                   _btnController.success();
                                   await Future.delayed(
