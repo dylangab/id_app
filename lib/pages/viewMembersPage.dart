@@ -772,7 +772,10 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                                     const Duration(seconds: 1));
                                 selectedStudent = [];
                                 _buttonController.stop();
-
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            "Saved in your phone's Download folder")));
                                 Get.to(() => const StudentPreidentHomePage());
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -789,7 +792,10 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                                     const Duration(seconds: 1));
                                 selectedStudent = [];
                                 _buttonController.stop();
-
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            "Saved in your phone's Download folder")));
                                 Get.to(() => const StudentPreidentHomePage());
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(

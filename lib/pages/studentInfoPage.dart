@@ -262,6 +262,9 @@ class _StudentInfoPageState extends State<StudentInfoPage> {
                       _buttonController.start();
                       await Future.delayed(const Duration(seconds: 1));
                       _buttonController.stop();
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content:
+                              Text("Saved in your phone's Download folder")));
                       Get.to(() => const StudentPreidentHomePage());
                     } else {}
                   },
