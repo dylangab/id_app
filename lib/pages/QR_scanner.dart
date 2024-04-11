@@ -5,7 +5,7 @@ import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/models/member.dart';
 import 'package:id_app/pages/studentInfoPage.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
+
 import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';
 
 class QrPage extends StatefulWidget {
@@ -16,8 +16,6 @@ class QrPage extends StatefulWidget {
 }
 
 class QrPageState extends State<QrPage> {
-  Result? currentResult;
-
   int? output;
   String barcode = "";
   @override
