@@ -1,14 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:id_app/pages/President%20Account/createPresidentAccount.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
-import 'package:flutter/animation.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
       stream: auth.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> userSnapshot) {
         if (userSnapshot.connectionState == ConnectionState.waiting) {
+          Provider.of<MembersData>(context, listen: false).initateData;
           return Container(
               alignment: Alignment.center,
               child: const CircularProgressIndicator(

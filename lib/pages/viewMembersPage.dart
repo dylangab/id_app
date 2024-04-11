@@ -1,18 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/models/member.dart';
 import 'package:id_app/models/studentPreident.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
-import 'package:gif_view/gif_view.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
-
 import 'package:id_app/pages/studentInfoPage.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';

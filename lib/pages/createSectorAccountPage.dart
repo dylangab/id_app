@@ -928,7 +928,8 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                                     await CreateMemberAccount()
                                         .createMemeberAccount(member)
                                         .then((value) {
-                                      Provider.of<MembersData>(context)
+                                      Provider.of<MembersData>(context,
+                                              listen: false)
                                           .initateData();
                                     });
                                   }
