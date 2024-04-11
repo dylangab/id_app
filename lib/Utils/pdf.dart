@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:id_app/Utils/helperFunctions.dart';
+import 'package:id_app/models/studentPreident.dart';
 import 'package:printing/printing.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:id_app/models/member.dart';
 import 'package:id_app/pages/selectstudents.dart';
-//import 'package:open_document/my_files/init.dart';
 import 'package:pdf/pdf.dart';
-//import 'package:barcode_widget/barcode_widget.dart' ;
 import 'package:pdf/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:document_file_save_plus/document_file_save_plus.dart';
@@ -34,22 +34,22 @@ class PdfApi {
     return file;
   }
 
-  Future<File> generateSingleId(Member member) async {
+  Future<File> generateSingleId(
+      Member member, StudentPreident studentPreident) async {
     final ByteData image = await rootBundle.load('assets/images/logo.png');
-
-    final ByteData imagestamp =
-        await rootBundle.load('assets/images/stamp.jpg');
+    var date = DateTime.now();
+    String dateOfIssue = await HelperFunctions().dateformat1(date);
+    String expiryDate = await HelperFunctions().adddate(date);
 
     final font = await rootBundle.load("assets/fonts/AbyssinicaSIL-R.ttf");
 
     final ttf = Font.ttf(font);
-    final ByteData image2 = await rootBundle.load('assets/images/sign.jpg');
-    Uint8List sign = (image2).buffer.asUint8List();
-    Uint8List stamp = (imagestamp).buffer.asUint8List();
 
     Uint8List logo = (image).buffer.asUint8List();
     final pdf = Document();
     final img = await networkImage(member.studentPhoto!);
+    final sign = await networkImage(studentPreident.signature!);
+    final stamp = await networkImage(studentPreident.stamp!);
     pdf.addPage(MultiPage(
         pageFormat: const PdfPageFormat(
             PdfPageFormat.inch * 2.125, PdfPageFormat.inch * 3.375),
@@ -124,9 +124,8 @@ class PdfApi {
               Container(
                   height: 10,
                   color: PdfColor.fromHex("#06304b"),
-                  decoration: BoxDecoration(color: PdfColor.fromHex("#06304b")),
                   child: Center(
-                      child: Text("${member.sector!} SECTOR",
+                      child: Text("${member.sector!.toUpperCase()} SECTOR",
                           style: TextStyle(
                               fontSize: 5,
                               fontWeight: FontWeight.bold,
@@ -149,14 +148,14 @@ class PdfApi {
                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("የተሰጠበት ቀን: 02/01/2023",
+                              Text("የተሰጠበት ቀን: $dateOfIssue",
                                   style: TextStyle(fontSize: 6, font: ttf)),
                               Text("Date of Issue",
                                   style: const TextStyle(fontSize: 6)),
                               SizedBox(
                                 height: 3,
                               ),
-                              Text("የሚያበቃበት ቀን: 11/9/2023",
+                              Text("የሚያበቃበት ቀን: $expiryDate",
                                   style: TextStyle(fontSize: 6, font: ttf)),
                               Text("Expiry Date",
                                   style: const TextStyle(fontSize: 6)),
@@ -176,11 +175,11 @@ class PdfApi {
                       children: [
                         Column(children: [
                           SizedBox(
-                            height: 200,
-                            width: 50,
-                            child: Image(MemoryImage(sign), fit: BoxFit.fill),
+                            height: 30,
+                            width: 40,
+                            child: Image(sign, fit: BoxFit.fill),
                           ),
-                          Text("Tarea Sisay",
+                          Text(studentPreident!.fullName!,
                               style: TextStyle(
                                 fontSize: 5,
                                 color: PdfColor.fromHex("#562e61"),
@@ -200,9 +199,9 @@ class PdfApi {
                               ))
                         ]),
                         SizedBox(
-                            height: 70,
-                            width: 100,
-                            child: Image(MemoryImage(stamp), fit: BoxFit.fill))
+                            height: 60,
+                            width: 50,
+                            child: Image(stamp, fit: BoxFit.fill))
                       ])),
               SizedBox(height: 3),
               Center(
@@ -217,20 +216,20 @@ class PdfApi {
               ])),
               SizedBox(height: 3),
               Container(height: 1.5, color: PdfColor.fromHex("#06304b")),
-              SizedBox(height: 5),
+              SizedBox(height: 10),
               Center(
                   child: Column(children: [
                 Text("ተማሪው ህብረቱን በሚለቅበት ጊዜ ይህን መታወቂያ ካርድ",
-                    style: TextStyle(fontSize: 5, font: ttf)),
+                    style: TextStyle(fontSize: 6, font: ttf)),
                 Text("ለህብረቱ ጽ/ቤት ተመላሽ ማድረግ አለበት።",
-                    style: TextStyle(fontSize: 5, font: ttf)),
+                    style: TextStyle(fontSize: 6, font: ttf)),
                 Text("This ID should be returned to the Student Union Office",
-                    style: const TextStyle(fontSize: 5)),
+                    style: const TextStyle(fontSize: 6)),
                 Text("up on termination or resignation.",
-                    style: const TextStyle(fontSize: 5))
+                    style: const TextStyle(fontSize: 6))
               ])),
-              SizedBox(height: 5),
-              Container(color: PdfColor.fromHex("#06304b"), height: 40.5)
+              SizedBox(height: 10),
+              Container(color: PdfColor.fromHex("#06304b"), height: 36)
             ])
           ];
         }));
@@ -238,9 +237,12 @@ class PdfApi {
         name: "${member.firstName} ${DateTime.timestamp()}", pdf: pdf);
   }
 
-  Future<File> generateMultiId(List<Member> studentList) async {
+  Future<File> generateMultiId(
+      List<Member> studentList, StudentPreident studentPreident) async {
     final ByteData image = await rootBundle.load('assets/images/logo.png');
-
+    var date = DateTime.now();
+    String dateOfIssue = await HelperFunctions().dateformat1(date);
+    String expiryDate = await HelperFunctions().adddate(date);
     final ByteData imagestamp =
         await rootBundle.load('assets/images/stamp.jpg');
 
@@ -248,14 +250,16 @@ class PdfApi {
 
     final ttf = Font.ttf(font);
     final ByteData image2 = await rootBundle.load('assets/images/sign.jpg');
-    Uint8List sign = (image2).buffer.asUint8List();
-    Uint8List stamp = (imagestamp).buffer.asUint8List();
+    //   Uint8List sign = (image2).buffer.asUint8List();
+    //  Uint8List stamp = (imagestamp).buffer.asUint8List();
 
     Uint8List logo = (image).buffer.asUint8List();
     final pdf = Document();
 
     for (var element in studentList) {
       final img = await networkImage(element.studentPhoto!);
+      final sign = await networkImage(studentPreident.signature!);
+      final stamp = await networkImage(studentPreident.stamp!);
       pdf.addPage(MultiPage(
           pageFormat: const PdfPageFormat(
               PdfPageFormat.inch * 2.125, PdfPageFormat.inch * 3.375),
@@ -332,7 +336,7 @@ class PdfApi {
                     decoration:
                         BoxDecoration(color: PdfColor.fromHex("#06304b")),
                     child: Center(
-                        child: Text("${element.sector!} SECTOR",
+                        child: Text("${element.sector!.toUpperCase()} SECTOR",
                             style: TextStyle(
                                 fontSize: 5,
                                 fontWeight: FontWeight.bold,
@@ -355,14 +359,14 @@ class PdfApi {
                           Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("የተሰጠበት ቀን: 02/01/2023",
+                                Text("የተሰጠበት ቀን: $dateOfIssue",
                                     style: TextStyle(fontSize: 6, font: ttf)),
                                 Text("Date of Issue",
                                     style: const TextStyle(fontSize: 6)),
                                 SizedBox(
                                   height: 3,
                                 ),
-                                Text("የሚያበቃበት ቀን: 11/9/2023",
+                                Text("የሚያበቃበት ቀን: $expiryDate",
                                     style: TextStyle(fontSize: 6, font: ttf)),
                                 Text("Expiry Date",
                                     style: const TextStyle(fontSize: 6)),
@@ -381,8 +385,12 @@ class PdfApi {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Column(children: [
-                            Image(MemoryImage(sign), height: 200, width: 50),
-                            Text("Tarea Sisay",
+                            SizedBox(
+                              height: 30,
+                              width: 40,
+                              child: Image(sign, fit: BoxFit.fill),
+                            ),
+                            Text(studentPreident!.fullName!,
                                 style: TextStyle(
                                   fontSize: 5,
                                   color: PdfColor.fromHex("#562e61"),
@@ -401,7 +409,10 @@ class PdfApi {
                                   color: PdfColor.fromHex("#562e61"),
                                 ))
                           ]),
-                          Image(MemoryImage(stamp), height: 70, width: 100)
+                          SizedBox(
+                              height: 60,
+                              width: 50,
+                              child: Image(stamp, fit: BoxFit.fill))
                         ])),
                 SizedBox(height: 3),
                 Center(
@@ -416,20 +427,20 @@ class PdfApi {
                 ])),
                 SizedBox(height: 3),
                 Container(height: 1.5, color: PdfColor.fromHex("#06304b")),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
                 Center(
                     child: Column(children: [
                   Text("ተማሪው ህብረቱን በሚለቅበት ጊዜ ይህን መታወቂያ ካርድ",
-                      style: TextStyle(fontSize: 5, font: ttf)),
+                      style: TextStyle(fontSize: 6, font: ttf)),
                   Text("ለህብረቱ ጽ/ቤት ተመላሽ ማድረግ አለበት።",
-                      style: TextStyle(fontSize: 5, font: ttf)),
+                      style: TextStyle(fontSize: 6, font: ttf)),
                   Text("This ID should be returned to the Student Union Office",
-                      style: const TextStyle(fontSize: 5)),
+                      style: const TextStyle(fontSize: 6)),
                   Text("up on termination or resignation.",
-                      style: const TextStyle(fontSize: 5))
+                      style: const TextStyle(fontSize: 6))
                 ])),
-                SizedBox(height: 5),
-                Container(color: PdfColor.fromHex("#06304b"), height: 40.5)
+                SizedBox(height: 10),
+                Container(color: PdfColor.fromHex("#06304b"), height: 36)
               ])
             ];
           }));
@@ -437,21 +448,19 @@ class PdfApi {
     return savefile(name: "IDs ${DateTime.timestamp()}", pdf: pdf);
   }
 
-  Future<File> generateMultiPage(List<Member> member) async {
+  Future<File> generateMultiPage(
+      List<Member> member, StudentPreident studentPreident) async {
+    var date = DateTime.now();
+    String dateOfIssue = await HelperFunctions().dateformat1(date);
+    String expiryDate = await HelperFunctions().adddate(date);
     int page = calculatepageNumber(member.length);
     int range = 0;
     final pdf = Document();
     final ByteData image = await rootBundle.load('assets/images/logo.png');
 
-    final ByteData imagestamp =
-        await rootBundle.load('assets/images/stamp.jpg');
-
     final font = await rootBundle.load("assets/fonts/AbyssinicaSIL-R.ttf");
 
     final ttf = Font.ttf(font);
-    final ByteData image2 = await rootBundle.load('assets/images/sign.jpg');
-    Uint8List sign = (image2).buffer.asUint8List();
-    Uint8List stamp = (imagestamp).buffer.asUint8List();
 
     Uint8List logo = (image).buffer.asUint8List();
 
@@ -461,6 +470,8 @@ class PdfApi {
 
       for (var element in member.getRange(range, member.length)) {
         final img = await networkImage(element.studentPhoto!);
+        final sign = await networkImage(studentPreident.signature!);
+        final stamp = await networkImage(studentPreident.stamp!);
         list.add(Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Container(
@@ -539,7 +550,8 @@ class PdfApi {
                           color: PdfColor.fromHex("#06304b"),
                           height: 10,
                           child: Center(
-                              child: Text("${element.sector!} SECTOR",
+                              child: Text(
+                                  "${element.sector!.toUpperCase()} SECTOR",
                                   style: TextStyle(
                                       fontSize: 5,
                                       fontWeight: FontWeight.bold,
@@ -551,7 +563,7 @@ class PdfApi {
                 height: PdfPageFormat.inch * 3.137,
                 width: PdfPageFormat.inch * 2.125,
                 child: Column(children: [
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   Padding(
                       padding: const EdgeInsets.only(left: 20, right: 20),
                       child: Row(
@@ -560,14 +572,14 @@ class PdfApi {
                             Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("የተሰጠበት ቀን: 02/01/2023",
+                                  Text("የተሰጠበት ቀን: $dateOfIssue",
                                       style: TextStyle(fontSize: 6, font: ttf)),
                                   Text("Date of Issue",
                                       style: const TextStyle(fontSize: 6)),
                                   SizedBox(
                                     height: 3,
                                   ),
-                                  Text("የሚያበቃበት ቀን: 11/9/2023",
+                                  Text("የሚያበቃበት ቀን: $expiryDate",
                                       style: TextStyle(fontSize: 6, font: ttf)),
                                   Text("Expiry Date",
                                       style: const TextStyle(fontSize: 6)),
@@ -586,8 +598,12 @@ class PdfApi {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Column(children: [
-                              Image(MemoryImage(sign), height: 200, width: 50),
-                              Text("Tarea Sisay",
+                              SizedBox(
+                                height: 30,
+                                width: 40,
+                                child: Image(sign, fit: BoxFit.fill),
+                              ),
+                              Text(studentPreident.fullName!,
                                   style: TextStyle(
                                     fontSize: 5,
                                     color: PdfColor.fromHex("#562e61"),
@@ -606,7 +622,10 @@ class PdfApi {
                                     color: PdfColor.fromHex("#562e61"),
                                   ))
                             ]),
-                            Image(MemoryImage(stamp), height: 70, width: 100)
+                            SizedBox(
+                                height: 60,
+                                width: 50,
+                                child: Image(stamp, fit: BoxFit.fill))
                           ])),
                   SizedBox(height: 3),
                   Center(

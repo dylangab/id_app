@@ -1,8 +1,10 @@
 //import 'package:advance_pdf_viewer_fork/advance_pdf_viewer_fork.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:id_app/Utils/pdf.dart';
+import 'package:id_app/models/studentPreident.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:provider/provider.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
@@ -18,6 +20,7 @@ class StudentInfoPage extends StatefulWidget {
 String id = Get.arguments;
 RoundedLoadingButtonController _buttonController =
     RoundedLoadingButtonController();
+final uid = FirebaseAuth.instance.currentUser!.uid;
 
 class _StudentInfoPageState extends State<StudentInfoPage> {
   @override
@@ -248,8 +251,14 @@ class _StudentInfoPageState extends State<StudentInfoPage> {
                   controller: _buttonController,
                   onPressed: () async {
                     if (buttonBuilder.generate == true) {
+                      StudentPreident? studentPreident;
+                      studentPreident =
+                          await Provider.of<StudentPresidentDataFetch>(context,
+                                  listen: false)
+                              .getStudentData(uid);
                       await PdfApi().generateSingleId(
-                          memberData.membersList[buttonBuilder.studentId!]);
+                          memberData.membersList[buttonBuilder.studentId!],
+                          studentPreident!);
                       _buttonController.start();
                       await Future.delayed(const Duration(seconds: 1));
                       _buttonController.stop();

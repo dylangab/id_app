@@ -35,7 +35,7 @@ class _ViewAccountState extends State<ViewAccount> {
             return ListView(
               children: [
                 const SizedBox(
-                  height: 50,
+                  height: 70,
                 ),
                 Center(
                   child: CircleAvatar(
@@ -157,48 +157,6 @@ class _ViewAccountState extends State<ViewAccount> {
                         letterSpacing: 1.5,
                         fontWeight: FontWeight.bold),
                   ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: Text(
-                            "Secret Phrase",
-                            style: TextStyle(fontSize: 16, letterSpacing: 1.5),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10),
-                          child: Text(
-                            isvisible ? SecretKey().key : "********",
-                            style: const TextStyle(
-                                fontSize: 18,
-                                letterSpacing: 1.5,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isvisible = !isvisible;
-                          });
-                        },
-                        icon: isvisible
-                            ? Icon(Icons.visibility)
-                            : Icon(Icons.visibility_off))
-                  ],
                 ),
                 const SizedBox(
                   height: 40,

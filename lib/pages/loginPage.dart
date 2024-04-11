@@ -282,6 +282,9 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                   ))),
+          SizedBox(
+            height: 10,
+          ),
           Center(
             child: GestureDetector(
               onTap: () {
@@ -321,6 +324,7 @@ class _LoginPageState extends State<LoginPage> {
                                 child: const Text(
                                   "Proceed",
                                   style: TextStyle(
+                                      color: Colors.black,
                                       letterSpacing: 1.5,
                                       fontWeight: FontWeight.w500),
                                 )),

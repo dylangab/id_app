@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pdf/widgets.dart';
@@ -192,5 +192,17 @@ class HelperFunctions {
       print(e.toString());
     }
     return list;
+  }
+
+  Future<String> dateformat1(DateTime dateTime) async {
+    var format = DateFormat("dd/MM/yy");
+    String formated = format.format(dateTime);
+    return formated;
+  }
+
+  Future<String> adddate(DateTime dateTime) async {
+    var add = dateTime.add(Duration(days: 1460));
+    String result = await dateformat1(add);
+    return result;
   }
 }

@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:id_app/Utils/pdf.dart';
 import 'package:id_app/models/member.dart';
+import 'package:id_app/models/studentPreident.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:gif_view/gif_view.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +51,7 @@ RoundedLoadingButtonController _buttonController =
     RoundedLoadingButtonController();
 bool A4Selected = true;
 bool scrollSelected = false;
+final uid = FirebaseAuth.instance.currentUser!.uid;
 
 class _ViewMembersPageState extends State<ViewMembersPage> {
   @override
@@ -580,28 +583,50 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                                                     color: Colors.grey,
                                                   )),
                                         onTap: () {
-                                          setState(() {
-                                            if (!selectedStudent.contains(
-                                                data.membersList[index])) {
-                                              selectedStudent
-                                                  .add(data.membersList[index]);
-                                            } else if (selectedStudent.contains(
-                                                data.membersList[index])) {
-                                              selectedStudent.removeWhere(
-                                                  (element) =>
-                                                      element ==
-                                                      data.membersList[index]);
-                                            }
-                                          });
-
-                                          // print(selectedStudent);
+                                          bool select = Provider.of<
+                                                      SelectStudentPageBuilder>(
+                                                  context,
+                                                  listen: false)
+                                              .builder;
+                                          if (select) {
+                                            setState(() {
+                                              if (!selectedStudent.contains(
+                                                  data.membersList[index])) {
+                                                selectedStudent.add(
+                                                    data.membersList[index]);
+                                              } else if (selectedStudent
+                                                  .contains(data
+                                                      .membersList[index])) {
+                                                selectedStudent.removeWhere(
+                                                    (element) =>
+                                                        element ==
+                                                        data.membersList[
+                                                            index]);
+                                              }
+                                            });
+                                          } else {
+                                            Provider.of<studentInfoButtonBuilder>(
+                                                    listen: false, context)
+                                                .passValue(index, false,
+                                                    "Generate ID");
+                                            Get.to(
+                                                () => const StudentInfoPage());
+                                          }
                                         },
                                         onLongPress: () {
-                                          Provider.of<studentInfoButtonBuilder>(
-                                                  listen: false, context)
-                                              .passValue(
-                                                  index, false, "Generate ID");
-                                          Get.to(() => const StudentInfoPage());
+                                          bool select = Provider.of<
+                                                      SelectStudentPageBuilder>(
+                                                  context,
+                                                  listen: false)
+                                              .builder;
+                                          if (select) {
+                                            Provider.of<studentInfoButtonBuilder>(
+                                                    listen: false, context)
+                                                .passValue(index, false,
+                                                    "Generate ID");
+                                            Get.to(
+                                                () => const StudentInfoPage());
+                                          }
                                         },
                                       ),
                                     ),
@@ -731,10 +756,16 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                           width: MediaQuery.of(context).size.width,
                           controller: _buttonController,
                           onPressed: () async {
+                            StudentPreident? studentPreident;
+                            studentPreident =
+                                await Provider.of<StudentPresidentDataFetch>(
+                                        context,
+                                        listen: false)
+                                    .getStudentData(uid);
                             if (A4Selected) {
                               try {
-                                await PdfApi()
-                                    .generateMultiPage(selectedStudent);
+                                await PdfApi().generateMultiPage(
+                                    selectedStudent, studentPreident!);
 
                                 _buttonController.start();
                                 await Future.delayed(
@@ -750,7 +781,8 @@ class _ViewMembersPageState extends State<ViewMembersPage> {
                               }
                             } else if (scrollSelected) {
                               try {
-                                await PdfApi().generateMultiId(selectedStudent);
+                                await PdfApi().generateMultiId(
+                                    selectedStudent, studentPreident!);
 
                                 _buttonController.start();
                                 await Future.delayed(

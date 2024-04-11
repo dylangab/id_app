@@ -85,18 +85,18 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
     return Scaffold(
         appBar: AppBar(
           leading: GestureDetector(
-            onLongPress: () {
-              Get.to(() => const CreatePresidentAccountPage());
-            },
             onTap: () {
               Get.to(() => const ViewAccount());
             },
             child: const Padding(
               padding: EdgeInsets.only(left: 15),
               child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://img.freepik.com/free-photo/portrait-white-man-isolated_53876-40306.jpg"),
+                backgroundColor: Colors.yellow,
                 radius: 20,
+                child: Icon(
+                  Icons.person,
+                  size: 25,
+                ),
               ),
             ),
           ),

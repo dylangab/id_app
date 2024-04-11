@@ -6,6 +6,7 @@ import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/models/studentPreident.dart';
 import 'package:id_app/pages/Id_error_page.dart';
 import 'package:id_app/pages/President%20Account/createPresidentAccount.dart';
+import 'package:id_app/pages/President%20Account/verifyEmail_page.dart';
 import 'package:id_app/pages/President%20Account/view_account.dart';
 import 'package:id_app/pages/loginPage.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
@@ -52,7 +53,7 @@ Future<void> main() async {
 //   Widget build(BuildContext context) {
 //     return const GetMaterialApp(
 //       debugShowCheckedModeBanner: false,
-//       home: StudentPreidentHomePage(),
+//       home: VerifyEmailPage(),
 //     );
 //   }
 // }
