@@ -1174,7 +1174,6 @@ class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
                                                         BorderRadius.circular(
                                                             10))),
                                             onPressed: () async {
-                                              String key = SecretKey().key;
                                               if (studentPic == null ??
                                                   stamp == null ??
                                                   signiture == null) {
@@ -2376,7 +2375,6 @@ class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
                                               borderRadius:
                                                   BorderRadius.circular(10))),
                                       onPressed: () async {
-                                        String key = SecretKey().key;
                                         if (studentPic == null ??
                                             stamp == null ??
                                             signiture == null) {

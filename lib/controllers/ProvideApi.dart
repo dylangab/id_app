@@ -45,59 +45,6 @@ class CreateAccountButtonBuilder extends ChangeNotifier {
   }
 }
 
-class MultiIdGenerate extends ChangeNotifier {
-  List<DocumentSnapshot> selectedstudents = [];
-
-  void addToList(DocumentSnapshot student) {
-    selectedstudents.add(student);
-    notifyListeners();
-  }
-
-  void dropList() {
-    selectedstudents.clear();
-    notifyListeners();
-  }
-
-  void removeFromList(DocumentSnapshot student) {
-    selectedstudents.removeWhere((element) => element == student);
-    notifyListeners();
-  }
-}
-
-class DropdownValueController extends ChangeNotifier {
-  List<String> Sectors = ["Cafe", "kjgh", "fdaf"];
-  String? buttonValue = sectors[0];
-
-  Future<void> fetchSectors() async {
-    DocumentSnapshot doc =
-        await FirebaseFirestore.instance.collection('Sectors').doc('').get();
-    if (doc.exists) {
-      Sectors = (doc['Sectors'] as List<dynamic>).cast<String>();
-      // for (var item in catagoryList) {
-      //   print(item);
-      // }
-    }
-    notifyListeners();
-  }
-}
-
-class ValuePass extends ChangeNotifier {
-  String roleValue = "";
-  String departmentValue = "";
-  String sectorValue = "";
-  void roleValuePass(String v) {
-    roleValue = v;
-  }
-
-  void departmentValuePass(String v) {
-    departmentValue = v;
-  }
-
-  void sectorValuePass(String v) {
-    sectorValue = v;
-  }
-}
-
 class SelectStudentPageBuilder extends ChangeNotifier {
   bool builder = false;
   String header = "";
@@ -106,10 +53,6 @@ class SelectStudentPageBuilder extends ChangeNotifier {
     builder = builderValue;
     header = headerValue;
   }
-}
-
-class FilterData extends ChangeNotifier {
-  List selectedStudents = [];
 }
 
 class MembersData extends ChangeNotifier {
@@ -245,8 +188,4 @@ class StudentPresidentDataFetch extends ChangeNotifier {
       return null; // Or rethrow for further handling
     }
   }
-}
-
-class SecretKey {
-  String key = "ske&#er&";
 }

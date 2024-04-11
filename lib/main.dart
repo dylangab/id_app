@@ -3,11 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
-import 'package:id_app/models/studentPreident.dart';
-import 'package:id_app/pages/Id_error_page.dart';
-import 'package:id_app/pages/President%20Account/createPresidentAccount.dart';
-import 'package:id_app/pages/President%20Account/verifyEmail_page.dart';
-import 'package:id_app/pages/President%20Account/view_account.dart';
 import 'package:id_app/pages/loginPage.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:provider/provider.dart';
@@ -24,19 +19,13 @@ Future<void> main() async {
         ChangeNotifierProvider(
             create: (context) => StudentPresidentDataFetch()),
         ChangeNotifierProvider(create: (context) => MembersData()),
-        ChangeNotifierProvider(create: (context) => FilterData()),
         ChangeNotifierProvider(create: (context) => SelectStudentPageBuilder()),
-        ChangeNotifierProvider(
-          create: (context) => ValuePass(),
-        ),
         ChangeNotifierProvider(
           create: (context) => HeadingController(),
         ),
         ChangeNotifierProvider(
           create: (context) => studentInfoButtonBuilder(),
         ),
-        ChangeNotifierProvider(create: (context) => DropdownValueController()),
-        ChangeNotifierProvider(create: (context) => MultiIdGenerate()),
         ChangeNotifierProvider(
           create: (context) => CreateAccountButtonBuilder(),
         )
@@ -45,18 +34,6 @@ Future<void> main() async {
     ),
   );
 }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const GetMaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: VerifyEmailPage(),
-//     );
-//   }
-// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -1,13 +1,12 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui';
+
 import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/models/studentPreident.dart';
 import 'package:printing/printing.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:id_app/models/member.dart';
-import 'package:id_app/pages/selectstudents.dart';
+
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:path_provider/path_provider.dart';
@@ -243,15 +242,10 @@ class PdfApi {
     var date = DateTime.now();
     String dateOfIssue = await HelperFunctions().dateformat1(date);
     String expiryDate = await HelperFunctions().adddate(date);
-    final ByteData imagestamp =
-        await rootBundle.load('assets/images/stamp.jpg');
 
     final font = await rootBundle.load("assets/fonts/AbyssinicaSIL-R.ttf");
 
     final ttf = Font.ttf(font);
-    final ByteData image2 = await rootBundle.load('assets/images/sign.jpg');
-    //   Uint8List sign = (image2).buffer.asUint8List();
-    //  Uint8List stamp = (imagestamp).buffer.asUint8List();
 
     Uint8List logo = (image).buffer.asUint8List();
     final pdf = Document();

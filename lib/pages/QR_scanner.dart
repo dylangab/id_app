@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/models/member.dart';
-import 'package:id_app/pages/Id_error_page.dart';
 import 'package:id_app/pages/studentInfoPage.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_code_dart_scan/qr_code_dart_scan.dart';
