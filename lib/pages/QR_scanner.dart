@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/models/member.dart';
-import 'package:id_app/pages/studentInfoPage.dart';
 import 'package:provider/provider.dart';
 
 import 'package:ai_barcode_scanner/ai_barcode_scanner.dart';

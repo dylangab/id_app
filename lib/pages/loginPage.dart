@@ -1,9 +1,13 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:id_app/pages/President%20Account/createPresidentAccount.dart';
 import 'package:id_app/pages/studentPreidentHomePage.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -24,25 +28,89 @@ RoundedLoadingButtonController _buttonController =
     RoundedLoadingButtonController();
 bool isForget = false;
 bool loginButton = true;
+late StreamSubscription? subscription;
+bool isAlert = false;
+bool isDeviceConnected = false;
 
 class _LoginPageState extends State<LoginPage> {
-  // @override
-  // void dispose() {
-  //   _emailController.dispose();
-  //   _emailNode.dispose();
-  //   _passwordController.dispose();
-  //   _passwordNode.dispose();
+  void checkConnection() {
+    subscription = Connectivity().onConnectivityChanged.listen((event) async {
+      isDeviceConnected = await InternetConnection().hasInternetAccess;
+      if (!isDeviceConnected && isAlert == false) {
+        showAlertDialog();
+        setState(() {
+          isAlert = true;
+        });
+      }
+    });
+  }
 
-  //   super.dispose();
-  // }
+  showAlertDialog() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Center(
+              child: Text(
+            "Connection Problem",
+            style: TextStyle(fontWeight: FontWeight.w500),
+          )),
+          content: const Text(
+            "No internet connection detected. Please connect to a network to continue.",
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
+          actions: [
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
+                onPressed: () async {
+                  Get.back();
+                  setState(() {
+                    isAlert = false;
+                  });
+                  Future.delayed(const Duration(seconds: 1));
+                  isDeviceConnected =
+                      await InternetConnection().hasInternetAccess;
+                  if (!isDeviceConnected) {
+                    showAlertDialog();
+                    setState(() {
+                      isAlert = true;
+                    });
+                  }
+                },
+                child: const Center(
+                  child: Text(
+                    "Ok",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, color: Colors.black),
+                  ),
+                ))
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnection();
+  }
+
+  @override
+  void dispose() {
+    subscription!.cancel();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 233, 236, 239),
       body: ListView(
-        //mainAxisAlignment: MainAxisAlignment.start,
-        // crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(
             height: 190,
@@ -162,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
             maintainState: false,
             maintainSize: false,
             child: Animate(
-              effects: [const ScaleEffect()],
+              effects: const [ScaleEffect()],
               child: Padding(
                 padding: const EdgeInsets.only(left: 10, right: 0),
                 child: Row(
@@ -249,8 +317,8 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   try {
                     await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: _emailController.value.text,
-                        password: _passwordController.value.text);
+                        email: _emailController.value.text.trim(),
+                        password: _passwordController.value.text.trim());
 
                     _buttonController.start();
                     await Future.delayed(const Duration(seconds: 1));
@@ -278,7 +346,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                   ))),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Center(

@@ -3,10 +3,8 @@ import 'dart:io';
 import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/models/studentPreident.dart';
 import 'package:printing/printing.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:id_app/models/member.dart';
-
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:path_provider/path_provider.dart';

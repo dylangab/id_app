@@ -1,12 +1,8 @@
 import 'dart:io';
 import 'package:intl/intl.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
-import 'package:pdf/pdf.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:pdf/widgets.dart';
 import 'package:id_app/models/member.dart';
 
 class HelperFunctions {
@@ -63,7 +59,6 @@ class HelperFunctions {
   }
 
   Future<int> getIndexById(List<Member> studentList, String id) async {
-    int result;
     for (var i = 0; i < studentList.length; i++) {
       if (studentList[i].studentId == id) {
         return i;

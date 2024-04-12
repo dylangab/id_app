@@ -1,9 +1,11 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
-import 'package:printing/printing.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 
 class ViewAccount extends StatefulWidget {
@@ -16,6 +18,82 @@ class ViewAccount extends StatefulWidget {
 class _ViewAccountState extends State<ViewAccount> {
   bool isvisible = false;
   final uid = FirebaseAuth.instance.currentUser!.uid;
+  bool isDeviceConnected = false;
+  bool isAlert = false;
+  StreamSubscription? subscription;
+
+  void checkConnection() {
+    subscription = Connectivity().onConnectivityChanged.listen((event) async {
+      isDeviceConnected = await InternetConnection().hasInternetAccess;
+      if (!isDeviceConnected && isAlert == false) {
+        showAlertDialog();
+        setState(() {
+          isAlert = true;
+        });
+      }
+    });
+  }
+
+  showAlertDialog() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Center(
+              child: Text(
+            "Connection Problem",
+            style: TextStyle(fontWeight: FontWeight.w500),
+          )),
+          content: const Text(
+            "No internet connection detected. Please connect to a network to continue.",
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
+          actions: [
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
+                onPressed: () async {
+                  Get.back();
+                  setState(() {
+                    isAlert = false;
+                  });
+                  Future.delayed(const Duration(seconds: 1));
+                  isDeviceConnected =
+                      await InternetConnection().hasInternetAccess;
+                  if (!isDeviceConnected) {
+                    showAlertDialog();
+                    setState(() {
+                      isAlert = true;
+                    });
+                  }
+                },
+                child: const Center(
+                  child: Text(
+                    "Ok",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, color: Colors.black),
+                  ),
+                ))
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnection();
+  }
+
+  @override
+  void dispose() {
+    subscription!.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,106 +131,14 @@ class _ViewAccountState extends State<ViewAccount> {
                     style: TextStyle(fontSize: 16, letterSpacing: 1.5),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Padding(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     snapshot.data!.fullName!,
-                    style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Email",
-                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    snapshot.data!.email!,
-                    style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Student ID",
-                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    snapshot.data!.studentId!,
-                    style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Gender",
-                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    snapshot.data!.gender!,
-                    style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Department",
-                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
-                  ),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Text(
-                    snapshot.data!.department!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 18,
                         letterSpacing: 1.5,
                         fontWeight: FontWeight.bold),
@@ -161,14 +147,106 @@ class _ViewAccountState extends State<ViewAccount> {
                 const SizedBox(
                   height: 40,
                 ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Email",
+                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    snapshot.data!.email!,
+                    style: const TextStyle(
+                        fontSize: 18,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Student ID",
+                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    snapshot.data!.studentId!,
+                    style: const TextStyle(
+                        fontSize: 18,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Gender",
+                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    snapshot.data!.gender!,
+                    style: const TextStyle(
+                        fontSize: 18,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Department",
+                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
+                  ),
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    snapshot.data!.department!,
+                    style: const TextStyle(
+                        fontSize: 18,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
                   child: Text(
                     "Signiture",
                     style: TextStyle(fontSize: 16, letterSpacing: 1.5),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Padding(
@@ -182,17 +260,17 @@ class _ViewAccountState extends State<ViewAccount> {
                         image: NetworkImage(snapshot.data!.signature!)),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
                   child: Text(
                     "Stamp",
                     style: TextStyle(fontSize: 16, letterSpacing: 1.5),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Padding(

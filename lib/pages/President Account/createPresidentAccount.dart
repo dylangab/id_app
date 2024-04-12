@@ -1,18 +1,19 @@
+import 'dart:async';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/controllers/ProvideApi.dart';
 import 'package:id_app/models/studentPreident.dart';
 import 'package:id_app/pages/loginPage.dart';
-import 'package:id_app/pages/studentPreidentHomePage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class CreatePresidentAccountPage extends StatefulWidget {
   const CreatePresidentAccountPage({super.key});
@@ -64,14 +65,77 @@ bool signisUploaded = false;
 bool stampisLoading = false;
 bool stampisUploaded = false;
 int count = 0;
+late StreamSubscription? subscription;
+bool isAlert = false;
+bool isDeviceConnected = false;
 
 class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
     with TickerProviderStateMixin {
+  void checkConnection() {
+    subscription = Connectivity().onConnectivityChanged.listen((event) async {
+      isDeviceConnected = await InternetConnection().hasInternetAccess;
+      if (!isDeviceConnected && isAlert == false) {
+        showAlertDialog();
+        setState(() {
+          isAlert = true;
+        });
+      }
+    });
+  }
+
+  showAlertDialog() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Center(
+              child: Text(
+            "Connection Problem",
+            style: TextStyle(fontWeight: FontWeight.w500),
+          )),
+          content: const Text(
+            "No internet connection detected. Please connect to a network to continue.",
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
+          actions: [
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
+                onPressed: () async {
+                  Get.back();
+                  setState(() {
+                    isAlert = false;
+                  });
+                  Future.delayed(const Duration(seconds: 1));
+                  isDeviceConnected =
+                      await InternetConnection().hasInternetAccess;
+                  if (!isDeviceConnected) {
+                    showAlertDialog();
+                    setState(() {
+                      isAlert = true;
+                    });
+                  }
+                },
+                child: const Center(
+                  child: Text(
+                    "Ok",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, color: Colors.black),
+                  ),
+                ))
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    //fetchdata();
-    super.initState();
+
+    checkConnection();
     _studPicAnimationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
     _studPicAnimationController!.addListener(() {
@@ -118,8 +182,13 @@ class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    subscription!.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final dropdownValues = Provider.of<MembersData>(context);
     return Scaffold(
         backgroundColor: const Color.fromARGB(255, 233, 236, 239),
         body: count == 0
@@ -1137,7 +1206,7 @@ class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
                                                     : const Icon(
                                                         Icons.visibility)),
                                             hintText: "Confirm password",
-                                            helperStyle: TextStyle(
+                                            helperStyle: const TextStyle(
                                                 fontWeight: FontWeight.w100),
                                             filled: true,
                                             fillColor: Colors.white,
@@ -1339,12 +1408,14 @@ class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
                                                                       StudentPreident studentPreident = StudentPreident(
                                                                           email: _emailController
                                                                               .value
-                                                                              .text,
+                                                                              .text
+                                                                              .trim(),
                                                                           signature:
                                                                               signiturePicUrl,
                                                                           password: _passwordController
                                                                               .value
-                                                                              .text,
+                                                                              .text
+                                                                              .trim(),
                                                                           stamp:
                                                                               stampPicUrl,
                                                                           fullName:
@@ -2341,7 +2412,7 @@ class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
                                               ? const Icon(Icons.visibility_off)
                                               : const Icon(Icons.visibility)),
                                       hintText: "Confirm password",
-                                      helperStyle: TextStyle(
+                                      helperStyle: const TextStyle(
                                           fontWeight: FontWeight.w100),
                                       filled: true,
                                       fillColor: Colors.white,
@@ -2530,13 +2601,14 @@ class _CreatePresidentAccountPageState extends State<CreatePresidentAccountPage>
                                                                 StudentPreident studentPreident = StudentPreident(
                                                                     email: _emailController
                                                                         .value
-                                                                        .text,
+                                                                        .text
+                                                                        .trim(),
                                                                     signature:
                                                                         signiturePicUrl,
-                                                                    password:
-                                                                        _passwordController
-                                                                            .value
-                                                                            .text,
+                                                                    password: _passwordController
+                                                                        .value
+                                                                        .text
+                                                                        .trim(),
                                                                     stamp:
                                                                         stampPicUrl,
                                                                     fullName:

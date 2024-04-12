@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:id_app/Utils/helperFunctions.dart';
 import 'package:id_app/models/member.dart';
 import 'package:id_app/models/studentPreident.dart';
-import 'package:id_app/pages/createSectorAccountPage.dart';
 
 //S   s w
 class HeadingController extends ChangeNotifier {

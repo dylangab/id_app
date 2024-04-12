@@ -284,10 +284,10 @@ class _SectorAccountCreateState extends State<SectorAccountCreate>
                               child: DropdownButton2(
                                 focusNode: _department,
                                 hint: const Padding(
-                                  padding: const EdgeInsets.only(left: 10),
+                                  padding: EdgeInsets.only(left: 10),
                                   child: Text(
                                     "Choose your department",
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(fontSize: 16),
                                   ),
                                 ),
                                 items: value.departmentList

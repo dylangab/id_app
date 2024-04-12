@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:id_app/models/member.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class StudentPreident {

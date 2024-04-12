@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,8 @@ import 'package:id_app/pages/viewMembersPage.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/ProvideApi.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 class StudentPreidentHomePage extends StatefulWidget {
   const StudentPreidentHomePage({super.key});
@@ -32,51 +36,89 @@ TextEditingController departmentController = TextEditingController();
 FocusNode departmentNode = FocusNode();
 TextEditingController _searchController = TextEditingController();
 FocusNode _searchNode = FocusNode();
+late StreamSubscription? subscription;
+bool isAlert = false;
+bool isDeviceConnected = false;
 
 class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
     with SingleTickerProviderStateMixin {
+  void checkConnection() {
+    subscription = Connectivity().onConnectivityChanged.listen((event) async {
+      isDeviceConnected = await InternetConnection().hasInternetAccess;
+      if (!isDeviceConnected && isAlert == false) {
+        showAlertDialog();
+        setState(() {
+          isAlert = true;
+        });
+      }
+    });
+  }
+
+  showAlertDialog() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Center(
+              child: Text(
+            "Connection Problem",
+            style: TextStyle(fontWeight: FontWeight.w500),
+          )),
+          content: const Text(
+            "No internet connection detected. Please connect to a network to continue.",
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
+          actions: [
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10))),
+                onPressed: () async {
+                  Get.back();
+                  setState(() {
+                    isAlert = false;
+                  });
+                  Future.delayed(const Duration(seconds: 1));
+                  isDeviceConnected =
+                      await InternetConnection().hasInternetAccess;
+                  if (!isDeviceConnected) {
+                    showAlertDialog();
+                    setState(() {
+                      isAlert = true;
+                    });
+                  }
+                },
+                child: const Center(
+                  child: Text(
+                    "Ok",
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500, color: Colors.black),
+                  ),
+                ))
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    checkConnection();
+
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 1));
   }
 
-  // @override
-  // void dispose() {
-  //   _controller!.dispose();
-  //   _searchController.dispose();
-  //   _searchNode.dispose();
-  //   sectorController.dispose();
-  //   sectorNode.dispose();
-  //   roleController.dispose();
-  //   roleNode.dispose();
-  //   departmentController.dispose();
-  //   departmentNode.dispose();
-  //   super.dispose();
-  // }
-  // Stream<DocumentSnapshot> getDocumentSnapshotStream(
-  //     String collectionPath, String documentId, String field) {
-  //   final DocumentReference reference =
-  //       FirebaseFirestore.instance.collection(collectionPath).doc(documentId);
-  //   return reference.snapshots();
-  // }
+  @override
+  void dispose() {
+    subscription!.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Stream<DocumentSnapshot> userStream =
-    //     getDocumentSnapshotStream("catagories", "roles", "roles");
-
-    // userStream.listen((snapshot) {
-    //   if (snapshot.exists) {
-    //     List<String> list;
-    //     list = snapshot.get('roles');
-    //     Provider.of<MembersData>(context, listen: false).roleList = list;
-    //   } else {
-    //     print("Document does not exist!");
-    //   }
-    // });
-
     return Scaffold(
         appBar: AppBar(
           leading: GestureDetector(
@@ -761,30 +803,42 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                             List
                                                                                 sectorList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "sectors", "sectors");
-                                                                            sectorList.add(sectorController.value.text.toUpperCase().trim());
+                                                                            if (!sectorList.contains(sectorController.value.text.trim())) {
+                                                                              sectorList.add(sectorController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("sectors").set({
-                                                                              "sectors": sectorList
-                                                                            }).then((value) {
-                                                                              Provider.of<MembersData>(context, listen: false).initateData();
-                                                                            }).then((value) {
-                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
-                                                                              Get.back();
-                                                                            });
+                                                                              await FirebaseFirestore.instance.collection("catagories").doc("sectors").set({
+                                                                                "sectors": sectorList
+                                                                              }).then((value) {
+                                                                                Provider.of<MembersData>(context, listen: false).initateData();
+                                                                              }).then((value) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
+                                                                                Get.back();
+                                                                              });
+                                                                            } else if (sectorController.value.text.trim().isEmpty) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("please input sector")));
+                                                                            } else if (sectorList.contains(sectorController.value.text.trim())) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Sector already exists")));
+                                                                            }
                                                                           } else {
                                                                             List
                                                                                 sectorList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "sectors", "sectors");
-                                                                            sectorList.remove(sectorController.value.text.toUpperCase().trim());
+                                                                            if (sectorList.contains(sectorController.value.text.trim())) {
+                                                                              sectorList.remove(sectorController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("sectors").set({
-                                                                              "sectors": sectorList
-                                                                            }).then((value) {
-                                                                              Provider.of<MembersData>(context, listen: false).initateData();
-                                                                            }).then((value) {
-                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Removed")));
-                                                                              Get.back();
-                                                                            });
+                                                                              await FirebaseFirestore.instance.collection("catagories").doc("sectors").set({
+                                                                                "sectors": sectorList
+                                                                              }).then((value) {
+                                                                                Provider.of<MembersData>(context, listen: false).initateData();
+                                                                              }).then((value) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Removed")));
+                                                                                Get.back();
+                                                                              });
+                                                                            } else if (sectorController.value.text.trim().isEmpty) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("please input sector")));
+                                                                            } else if (!sectorList.contains(sectorController.value.text.trim())) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Sector doesn't exists")));
+                                                                            }
                                                                           }
                                                                         },
                                                                         child: Text(
@@ -936,31 +990,43 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                             List
                                                                                 roleList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "roles", "roles");
-                                                                            roleList.add(roleController.value.text.toUpperCase().trim());
+                                                                            if (!roleList.contains(roleController.value.text.trim())) {
+                                                                              roleList.add(roleController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("roles").set({
-                                                                              "roles": roleList
-                                                                            }).then((value) {
-                                                                              Provider.of<MembersData>(context, listen: false).initateData();
-                                                                            }).then((value) {
-                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
-                                                                              Get.back();
-                                                                            });
-                                                                            //       initiateDataStream();
+                                                                              await FirebaseFirestore.instance.collection("catagories").doc("roles").set({
+                                                                                "roles": roleList
+                                                                              }).then((value) {
+                                                                                Provider.of<MembersData>(context, listen: false).initateData();
+                                                                              }).then((value) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
+                                                                                Get.back();
+                                                                              });
+                                                                            } else if (roleController.value.text.trim().isEmpty) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("please input role")));
+                                                                            } else if (roleList.contains(roleController.value.text.trim())) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("role already exists")));
+                                                                            }
                                                                           } else {
                                                                             List
                                                                                 roleList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "roles", "roles");
-                                                                            roleList.remove(roleController.value.text.toUpperCase().trim());
+                                                                            if (roleList.contains(roleController.value.text.trim())) {
+                                                                              roleList.remove(roleController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("roles").set({
-                                                                              "roles": roleList
-                                                                            }).then((value) {
-                                                                              Provider.of<MembersData>(context, listen: false).initateData();
-                                                                            }).then((value) {
-                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully removed")));
-                                                                              Get.back();
-                                                                            });
+                                                                              await FirebaseFirestore.instance.collection("catagories").doc("roles").set({
+                                                                                "roles": roleList
+                                                                              }).then((value) {
+                                                                                Provider.of<MembersData>(context, listen: false).initateData();
+                                                                              }).then((value) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully removed")));
+                                                                                Get.back();
+                                                                              });
+                                                                            } else if (roleController.value.text.trim().isEmpty) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("please input role")));
+                                                                            } else if (!roleList.contains(roleController.value.text.trim())) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("role doesn't exists")));
+                                                                            }
+
                                                                             //      initiateDataStream();
                                                                           }
                                                                         },
@@ -998,7 +1064,7 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                                 ? "Remove role"
                                                                                 : "Add role",
                                                                             style:
-                                                                                TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w400)),
+                                                                                const TextStyle(decoration: TextDecoration.underline, fontWeight: FontWeight.w400)),
                                                                       ),
                                                                     )
                                                                   ],
@@ -1113,30 +1179,42 @@ class _StudentPreidentHomePageState extends State<StudentPreidentHomePage>
                                                                             List
                                                                                 depatmentsList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "departments", "departments");
-                                                                            depatmentsList.add(departmentController.value.text.toUpperCase().trim());
+                                                                            if (!depatmentsList.contains(departmentController.value.text.trim())) {
+                                                                              depatmentsList.add(departmentController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("departments").set({
-                                                                              "departments": depatmentsList
-                                                                            }).then((value) {
-                                                                              Provider.of<MembersData>(context, listen: false).initateData();
-                                                                            }).then((value) {
-                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
-                                                                              Get.back();
-                                                                            });
+                                                                              await FirebaseFirestore.instance.collection("catagories").doc("departments").set({
+                                                                                "departments": depatmentsList
+                                                                              }).then((value) {
+                                                                                Provider.of<MembersData>(context, listen: false).initateData();
+                                                                              }).then((value) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully Added")));
+                                                                                Get.back();
+                                                                              });
+                                                                            } else if (departmentController.value.text.trim().isEmpty) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("please input department")));
+                                                                            } else if (depatmentsList.contains(departmentController.value.text.trim())) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("department already exists")));
+                                                                            }
                                                                           } else {
                                                                             List
-                                                                                roleList =
+                                                                                departmentList =
                                                                                 await HelperFunctions().fetchCatagoires("catagories", "departments", "departments");
-                                                                            roleList.remove(departmentController.value.text.toUpperCase().trim());
+                                                                            if (departmentList.contains(departmentController.value.text.trim())) {
+                                                                              departmentList.remove(departmentController.value.text.toUpperCase().trim());
 
-                                                                            await FirebaseFirestore.instance.collection("catagories").doc("departments").set({
-                                                                              "departments": roleList
-                                                                            }).then((value) {
-                                                                              Provider.of<MembersData>(context, listen: false).initateData();
-                                                                            }).then((value) {
-                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully removed")));
-                                                                              Get.back();
-                                                                            });
+                                                                              await FirebaseFirestore.instance.collection("catagories").doc("departments").set({
+                                                                                "departments": departmentList
+                                                                              }).then((value) {
+                                                                                Provider.of<MembersData>(context, listen: false).initateData();
+                                                                              }).then((value) {
+                                                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("successfully removed")));
+                                                                                Get.back();
+                                                                              });
+                                                                            } else if (departmentController.value.text.trim().isEmpty) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("please input department")));
+                                                                            } else if (!departmentList.contains(departmentController.value.text.trim())) {
+                                                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("department doesn't exists")));
+                                                                            }
                                                                           }
                                                                         },
                                                                         child: Text(
